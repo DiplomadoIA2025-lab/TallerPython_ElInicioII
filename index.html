@@ -27,12 +27,12 @@
             border-color: #38bdf8;
             box-shadow: 0 0 5px rgba(56, 189, 248, 0.6);
         }
-        .slide {
+        #slides-container > .slide { /* FIX: Higher specificity to hide slides by default */
             display: none;
-            animation: fadeIn 0.6s ease-in-out;
         }
-        .slide.active {
-            display: block;
+        #slides-container > .slide.active { /* FIX: Use display:flex for active slides */
+            display: flex;
+            animation: fadeIn 0.6s ease-in-out;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -522,7 +522,7 @@ for numero in range(1, 4):
                 <p class="mt-6">¿Listo para construir la solución paso a paso?</p>
             </div>
         `,
-        help: "¡Este es el momento de la verdad! Aquí vamos a usar un `if` para la edad, y dentro de ese `if`, vamos a usar *otro* `if` para el tipo de boleto. A esto se le llama 'condicionales anidados'. Es como un puesto de control dentro de otro. Primero te revisan la edad y, si pasas, luego te revisan el boleto."
+        help: "¡Este es el momento de la verdad! Aquí vamos a usar un `if` para la edad, y dentro de ese `if`, vamos a usar *otro* `if` para el tipo de boleto. A esto se le llama 'condicionales anidados'. Es como un puesto de control dentro de otro. Primero te revisan la edad, y si pasas, luego te revisan el boleto."
     },
     // Evaluación Final Interactiva
     {
@@ -898,3 +898,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+"
+
