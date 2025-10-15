@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: Módulo 2 - Dando Órdenes con Lógica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark blue-gray */
+            color: #E5E7EB; /* Light gray */
+        }
+        .fira-code {
+            font-family: 'Fira Code', monospace;
+        }
+        .slide {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .slide.active {
+            opacity: 1;
+            position: relative;
+        }
+        .btn-primary {
+            background-color: #3B82F6;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+        .btn-secondary {
+            background-color: #4B5563;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .code-block {
+            background-color: #1F2937;
+            border-left: 4px solid #3B82F6;
+        }
+        /* Custom scrollbar for help modal */
+        #help-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        #help-content::-webkit-scrollbar-track {
+            background: #1F2937;
+        }
+        #help-content::-webkit-scrollbar-thumb {
+            background-color: #3B82F6;
+            border-radius: 10px;
+            border: 2px solid #1F2937;
+        }
+    </style>
+</head>
+<body class="w-full min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-4xl h-[70vh] min-h-[500px] relative glass-effect rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        
+        <!-- Header with Progress Bar -->
+        <div class="p-4 border-b border-gray-700">
+            <h1 class="text-xl md:text-2xl font-bold text-center text-blue-400">Módulo 2: Dando Órdenes con Lógica</h1>
+            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
+                <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%; transition: width 0.5s;"></div>
+            </div>
+        </div>
+
+        <!-- Slides Container -->
+        <div id="slides-container" class="flex-grow relative p-6 md:p-8 overflow-y-auto">
+            <!-- Slides will be injected here by JavaScript -->
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex justify-between items-center p-4 border-t border-gray-700 bg-gray-900/30">
+            <button id="prev-btn" class="btn-secondary py-2 px-4 rounded-lg flex items-center gap-2"><i data-lucide="arrow-left"></i> Anterior</button>
+            <span id="slide-counter" class="text-sm text-gray-400">1 / N</span>
+            <button id="next-btn" class="btn-primary py-2 px-4 rounded-lg flex items-center gap-2">Siguiente <i data-lucide="arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Help Button -->
+    <button id="help-btn" class="fixed bottom-5 right-5 btn-primary w-14 h-14 rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+        <i data-lucide="help-circle" class="w-8 h-8"></i>
+    </button>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-600">
+                <h2 class="text-xl font-bold text-blue-400 flex items-center gap-2"><i data-lucide="lightbulb"></i> Guía de Ayuda</h2>
+                <button id="close-help-btn" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div id="help-content" class="p-6 overflow-y-auto">
+                <!-- Help text will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
+        <div id="feedback-content" class="text-center p-8 rounded-2xl shadow-xl w-full max-w-md">
+            <!-- Feedback will be injected here -->
+        </div>
+    </div>
+
+
+    <script>
+        const slidesContainer = document.getElementById('slides-container');
+        const progressBar = document.getElementById('progress-bar');
+        const slideCounter = document.getElementById('slide-counter');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelpBtn = document.getElementById('close-help-btn');
+        const helpContent = document.getElementById('help-content');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const feedbackContent = document.getElementById('feedback-content');
+
+        let currentSlide = 0;
+        let studentProgress = {}; // To store quiz results
+
+        // ===================================
+        // ALL SLIDE DATA
+        // ===================================
+        const slidesData = [
+            // --- Intro ---
+            {
+                type: 'intro',
+                title: '¡Bienvenido al Módulo 2!',
+                content: `<p class="text-lg mb-4">¡Felicitaciones por llegar hasta aquí! Ya sabes cómo guardar información. Ahora, vamos a enseñarle al computador a "razonar" y tomar decisiones.</p><p>Imagina el tráfico de Bogotá. No siempre tomas la misma ruta, ¿verdad? Si la Séptima está congestionada, tomas otra avenida. Eso es tomar una decisión basada en una condición. ¡Hoy le daremos ese poder a nuestros programas!</p>`,
+                image: 'https://images.unsplash.com/photo-1583190002196-5387431505e3?q=80&w=800&auto=format&fit=crop',
+                help: `¡Hola! En este módulo, vamos a dejar de darle al computador órdenes que siempre se cumplen igual. Le enseñaremos a evaluar situaciones. Por ejemplo, en vez de solo decir "imprime esto", le diremos "SI pasa esto, imprime una cosa, y SI NO, imprime otra". Es como darle inteligencia a tu código.`
+            },
+            {
+                type: 'objectives',
+                title: 'Objetivos del Módulo',
+                items: [
+                    'Entender y usar <strong>condicionales (if, elif, else)</strong> para tomar decisiones.',
+                    'Comprender los valores de verdad <strong>(True / False)</strong> y los operadores de comparación.',
+                    'Aprender a usar <strong>bucles (for)</strong> para repetir tareas automáticamente.',
+                    'Combinar condicionales y bucles para crear programas más potentes.'
+                ],
+                help: `Estos son los "superpoderes" que obtendrás al final del módulo. El 'if' es para decidir, 'True/False' son las únicas respuestas que el computador entiende para una pregunta (sí o no), y el 'for' es para no tener que escribir lo mismo mil veces. Es como decirle "repite esto 10 veces" sin copiar y pegar.`
+            },
+            // --- Part 1: Conditionals ---
+            {
+                type: 'concept',
+                title: 'Parte 1: Tomando Decisiones',
+                content: `<p class="text-lg">El primer paso para que un programa "piense" es enseñarle a evaluar si algo es <strong>Verdadero (True)</strong> o <strong>Falso (False)</strong>.</p><p>En programación, a estos dos valores se les llama <strong>Booleanos</strong>. Son la base de todas las decisiones.</p>`,
+                icon: 'git-branch',
+                help: `Un 'booleano' suena complicado, pero es súper simple. Es solo una forma técnica de decir "sí o no". El computador no entiende de "quizás" o "a veces". Para él, algo o es verdadero (True) o es falso (False). No hay más opciones. Por ejemplo, la pregunta "¿Mi edad es mayor a 18?" solo tiene dos respuestas posibles para el computador: True o False.`
+            },
+            {
+                type: 'concept_code',
+                title: 'Operadores de Comparación',
+                content: `Para hacer preguntas, usamos los operadores de comparación. El resultado de usarlos siempre es <strong>True</strong> o <strong>False</strong>.`,
+                code: `==  : ¿Es igual a?         -> edad == 18
+!=  : ¿Es diferente a?      -> clima != "soleado"
+>   : ¿Es mayor que?        -> temperatura > 15
+<   : ¿Es menor que?        -> precio < 5000
+>=  : ¿Es mayor o igual que? -> edad >= 18
+<=  : ¿Es menor o igual que? -> pasajeros <= 5`,
+                help: `Estos símbolos son las herramientas para hacerle preguntas al computador. El más importante de recordar es '=='. ¡Usa dos iguales para preguntar! Si usas solo uno ('='), no estás preguntando, le estás dando una orden para guardar un valor. Es un error muy común al empezar, ¡así que ponle atención!`
+            },
+            {
+                type: 'concept',
+                title: 'La Sintaxis de la Decisión: if, elif, else',
+                content: `<ul class="space-y-4 text-lg">
+                    <li><span class="fira-code text-blue-400 font-bold">if</span> (Si...): La condición principal. Si es <strong>True</strong>, se ejecuta su código.</li>
+                    <li><span class="fira-code text-yellow-400 font-bold">elif</span> (Si no, si...): El "plan B", "C", etc. Revisa otra condición si la anterior fue <strong>False</strong>.</li>
+                    <li><span class="fira-code text-red-400 font-bold">else</span> (Si no...): El último recurso. Se ejecuta si NINGUNA de las condiciones anteriores fue <strong>True</strong>.</li>
+                </ul>`,
+                icon: 'list-tree',
+                help: `Piensa en esto como cuando pides comida: 'if' hay ajiaco, pido ajiaco. 'elif' hay bandeja paisa, pido bandeja paisa. 'else', pido lo que sea que tengan. El programa revisa las opciones en ese orden. Tan pronto como una es verdadera, ejecuta esa y se olvida de las demás.`
+            },
+            {
+                type: 'concept_critical',
+                title: '¡LA REGLA DE ORO: La Indentación!',
+                content: `<p class="text-xl">En Python, el espacio al principio de una línea es <strong>CRUCIAL</strong>. Se llama <strong>indentación</strong>.</p>
+                <p>La indentación (usualmente 4 espacios) le dice a Python qué código pertenece a un <strong>if</strong>, <strong>elif</strong>, o <strong>else</strong>. Sin la indentación correcta, el programa no funcionará.</p>`,
+                code: `clima = "lluvioso"
+
+if clima == "soleado":
+    # Este código está INDENTADO.
+    # Pertenece al 'if'.
+    print("¡Vamos a la ciclovía!")
+else:
+    # Este código también está INDENTADO.
+    # Pertenece al 'else'.
+    print("Mejor nos quedamos en casa.")`,
+                help: `¡Esto es lo más importante de Python! Ese "espacio" o "sangría" no es para que se vea bonito. Es una regla obligatoria. Es la forma que tiene Python de entender qué órdenes están dentro de qué condición. Si no pones ese espacio, es como si le hablaras en otro idioma, no te va a entender y te dará un error.`
+            },
+             {
+                type: 'practice',
+                title: 'Práctica: Simulador de Pico y Placa',
+                content: 'Vamos a crear un programa que nos diga si un carro con una placa terminada en cierto número tiene restricción. Hoy, supondremos que los dígitos del 1 al 5 tienen Pico y Placa.',
+                steps: [
+                    '<strong>Paso 1:</strong> Guarda el último dígito en una variable.',
+                    '<strong>Paso 2:</strong> Escribe el `if`. La condición debe preguntar si el dígito es menor o igual a 5.',
+                    '<strong>Paso 3:</strong> Dentro del `if`, imprime el mensaje de restricción.',
+                    '<strong>Paso 4:</strong> Añade el `else` para los carros que sí pueden salir.'
+                ],
+                code: `ultimo_digito_placa = 7
+
+if ultimo_digito_placa <= 5:
+    print("¡Ojo! Este carro tiene Pico y Placa.")
+else:
+    print("El carro puede salir sin problema.")
+    
+# EXPERIMENTA: Cambia el 7 por un 3 y mira qué pasa.`
+            },
+            {
+                type: 'quiz',
+                title: 'Punto de Control 🧠',
+                question: 'Si tienes el código: `edad = 20`. ¿Qué imprimirá la siguiente condición?',
+                code: `if edad < 18:
+    print("Menor de edad")
+elif edad == 20:
+    print("Tiene 20 años")
+else:
+    print("Mayor de edad")`,
+                options: ['Menor de edad', 'Tiene 20 años', 'Mayor de edad', 'Dará un error'],
+                correct: 1,
+                feedback: '¡Correcto! El programa primero revisa `edad < 18` (falso), luego `edad == 20` (verdadero), imprime "Tiene 20 años" y se detiene.',
+                help: `Recuerda el orden: Python va de arriba hacia abajo. La primera condición que encuentra que sea 'True' es la que ejecuta. Aunque `edad > 18` también es verdad, nunca llega a revisar el `else` porque el `elif` ya fue verdadero.`
+            },
+            // --- Part 2: Loops ---
+             {
+                type: 'concept',
+                title: 'Parte 2: Repitiendo Tareas',
+                content: `<p class="text-lg">Ahora, enseñaremos al computador a repetir una acción varias veces sin que tengamos que escribir el mismo código una y otra vez. A esto se le llama un <strong>bucle</strong>.</p><p>Es como recorrer las estaciones de una ruta de Transmilenio: en cada parada haces lo mismo (abrir y cerrar puertas) para cada estación de la lista.</p>`,
+                icon: 'repeat',
+                help: `Los bucles son uno de los conceptos más útiles. Imagina que tienes que saludar a 100 personas. ¿Escribirías `print("Hola")` 100 veces? ¡Claro que no! Con un bucle, le dices "haz `print("Hola")` 100 veces". Te ahorra tiempo y hace tu código mucho más corto y limpio.`
+            },
+            {
+                type: 'concept_code',
+                title: 'El Bucle `for`',
+                content: `La idea es simple: <strong>"Para cada elemento en este grupo, haz lo siguiente"</strong>.`,
+                code: `for variable_temporal in coleccion:
+    # Este código indentado se repetirá
+    # para cada elemento de la colección.`,
+                explanation: `<ul>
+                    <li><strong class="text-green-400">variable_temporal:</strong> Es una variable que creamos ahí mismo. En cada repetición, guardará un elemento del grupo.</li>
+                    <li><strong class="text-purple-400">coleccion:</strong> Es el grupo de elementos que vamos a recorrer (por ejemplo, una lista de nombres).</li>
+                </ul>`,
+                help: `La `variable_temporal` es como tu mano. Si la `coleccion` es una canasta de frutas, en la primera vuelta del bucle, tu mano (la variable) coge una manzana. En la segunda vuelta, coge una pera. Y así hasta que no queden frutas en la canasta. El nombre 'variable_temporal' lo pones tú, ¡puede ser `fruta`, `nombre`, `item`, lo que quieras que tenga sentido!`
+            },
+            {
+                type: 'practice',
+                title: 'Práctica: Recorriendo Localidades',
+                content: 'Vamos a crear un bucle que recorra una lista de localidades de Bogotá y las imprima una por una.',
+                code: `# 1. Creamos la colección (una lista)
+localidades = ["Usaquén", "Chapinero", "Teusaquillo", "Suba"]
+
+# 2. Creamos el bucle 'for'
+# "Para cada 'localidad' en la lista 'localidades'..."
+for localidad in localidades:
+    # 3. El código que se repite (¡con indentación!)
+    print("Visitando la localidad de: " + localidad)`,
+                help: `Fíjate cómo funciona: el bucle empieza. La primera vez, la variable `localidad` vale "Usaquén" y lo imprime. Termina el código indentado y vuelve a empezar. Ahora, `localidad` vale "Chapinero" y lo imprime. Así sigue hasta que se acaban los elementos de la lista.`
+            },
+            {
+                type: 'concept_code',
+                title: 'Repetir con `range()`',
+                content: 'A veces no tienes una lista, solo quieres repetir algo un número fijo de veces. Para eso, usamos `range()`.',
+                code: `# range(5) genera números del 0 al 4.
+# ¡Ojo! No incluye el 5.
+
+for numero in range(5):
+    # Sumamos 1 para que se vea del 1 al 5
+    print("Vuelta N°" + str(numero + 1))`,
+                explanation: '`range(X)` crea una secuencia de números que empieza en 0 y termina en X-1.',
+                help: `Esta es una herramienta súper común. `range()` es perfecta cuando sabes exactamente cuántas veces quieres repetir algo. `range(3)` te da 0, 1, 2. `range(10)` te da 0, 1, 2, 3, 4, 5, 6, 7, 8, 9. Siempre empieza en cero. Es como contar, pero los programadores aman empezar desde el 0.`
+            },
+            {
+                type: 'quiz',
+                title: 'Punto de Control 🧠',
+                question: '¿Cuántas veces se imprimirá la palabra "Hola" en la pantalla?',
+                code: `for i in range(3):
+    print("Hola")`,
+                options: ['2 veces', '3 veces', '4 veces', 'Dará un error'],
+                correct: 1,
+                feedback: '¡Exacto! `range(3)` genera la secuencia de números 0, 1, 2. El bucle se ejecuta una vez para cada número, es decir, 3 veces.',
+                help: `Aunque la variable `i` (que toma los valores 0, 1 y 2) no se usa dentro del bucle, sí que controla cuántas veces se ejecuta el código indentado. El bucle corre una vez por cada elemento en la secuencia que le das.`
+            },
+            // --- Final Challenge ---
+            {
+                type: 'final_challenge_intro',
+                title: '🚀 Desafío Final: El Validador de Transmilenio',
+                content: `<p class="text-lg">¡Es hora de combinarlo todo! Vamos a construir, paso a paso, un programa que simula la entrada a una estación de Transmilenio.</p>
+                <p>El programa tendrá un saldo inicial en una tarjeta y revisará si es suficiente para pagar el pasaje. Lo descubriremos juntos, línea por línea.</p>`,
+                icon: 'shield-check',
+                help: `Este es el gran final del módulo. Aquí no solo usarás `if` o `for` por separado, sino que los combinarás para resolver un problema más real. No te preocupes, te guiaré en cada paso. El objetivo es que veas cómo estas piezas se unen para crear algo útil.`
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 1',
+                question: 'Necesitamos dos variables para empezar: una para el saldo de la tarjeta y otra para el costo del pasaje. ¿Cómo declararías una variable `saldo_tarjeta` con un valor de 5000?',
+                placeholder: 'Escribe aquí la línea de código...',
+                correctAnswer: 'saldo_tarjeta = 5000',
+                codeLine: 1
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 2',
+                question: '¡Genial! Ahora, declara una variable `costo_pasaje` con un valor de 2950.',
+                placeholder: 'Escribe aquí la línea de código...',
+                correctAnswer: 'costo_pasaje = 2950',
+                codeLine: 2
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 3',
+                question: 'Perfecto. Ahora necesitamos la condición principal. ¿Cómo escribirías un `if` que revise si el saldo de la tarjeta es mayor o igual que el costo del pasaje?',
+                placeholder: 'if ... :',
+                correctAnswer: 'if saldo_tarjeta >= costo_pasaje:',
+                codeLine: 3
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 4',
+                question: '¡Correcto! Si el saldo es suficiente, debemos imprimir que el usuario puede pasar y luego actualizar el saldo. ¿Cómo imprimirías "Puede pasar. ¡Bienvenido!"?',
+                placeholder: 'Recuerda la indentación...',
+                correctAnswer: '    print("Puede pasar. ¡Bienvenido!")',
+                codeLine: 4
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 5',
+                question: 'Muy bien. Ahora, ¿cómo actualizarías la variable `saldo_tarjeta` para restarle el `costo_pasaje`?',
+                placeholder: 'saldo_tarjeta = ...',
+                correctAnswer: '    saldo_tarjeta = saldo_tarjeta - costo_pasaje',
+                codeLine: 5
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 6',
+                question: 'Excelente. Después de la transacción, vamos a mostrarle al usuario su nuevo saldo. ¿Cómo imprimirías el nuevo saldo?',
+                placeholder: 'print("Tu nuevo saldo es: " + ...)',
+                correctAnswer: '    print("Tu nuevo saldo es: " + str(saldo_tarjeta))',
+                codeLine: 6
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 7',
+                question: 'Casi terminamos. ¿Qué pasa si el saldo no es suficiente? Necesitamos un `else`. ¿Cómo escribirías el `else` para manejar esa situación?',
+                placeholder: 'Debe estar al mismo nivel que el if...',
+                correctAnswer: 'else:',
+                codeLine: 7
+            },
+            {
+                type: 'final_challenge_step',
+                title: 'Desafío: Paso 8',
+                question: '¡Último paso! Dentro del `else`, ¿cómo le dirías al usuario "Saldo insuficiente. Por favor recarga tu tarjeta."?',
+                placeholder: 'Recuerda la indentación...',
+                correctAnswer: '    print("Saldo insuficiente. Por favor recarga tu tarjeta.")',
+                codeLine: 8
+            },
+            {
+                type: 'outro',
+                title: '¡Módulo 2 Completado!',
+                content: `<p class="text-xl mb-4">¡LO LOGRASTE! Has dominado dos de las herramientas más poderosas de la programación: los condicionales y los bucles.</p>
+                <p>Ahora puedes crear programas que toman decisiones, se adaptan a diferentes situaciones y realizan tareas repetitivas de forma eficiente. Estás un paso más cerca de convertirte en un gran programador.</p>`,
+                icon: 'award'
+            }
+        ];
+        
+        // ===================================
+        // RENDERING LOGIC
+        // ===================================
+        function renderSlide() {
+            slidesContainer.innerHTML = '';
+            const slideData = slidesData[currentSlide];
+            let slideHTML = `<div class="slide active w-full h-full flex flex-col justify-center items-center text-center p-4">`;
+
+            if (slideData.type === 'intro') {
+                slideHTML += `
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">${slideData.title}</h2>
+                    <div class="text-gray-300 md:text-lg max-w-2xl">${slideData.content}</div>
+                     ${slideData.image ? `<img src="${slideData.image}" class="mt-6 rounded-lg max-h-48 shadow-lg object-cover">` : ''}
+                `;
+            } else if (slideData.type === 'objectives') {
+                slideHTML += `
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">${slideData.title}</h2>
+                    <ul class="space-y-3 text-left max-w-lg mx-auto">
+                        ${slideData.items.map(item => `
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="text-green-400 mt-1 w-6 h-6 flex-shrink-0"></i>
+                                <span class="md:text-lg">${item}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            } else if (slideData.type === 'concept') {
+                slideHTML += `
+                    ${slideData.icon ? `<div class="bg-blue-500/20 p-3 rounded-full mb-4"><i data-lucide="${slideData.icon}" class="w-10 h-10 text-blue-400"></i></div>` : ''}
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">${slideData.title}</h2>
+                    <div class="text-gray-300 md:text-lg max-w-2xl">${slideData.content}</div>
+                `;
+            } else if (slideData.type === 'concept_code' || slideData.type === 'concept_critical') {
+                 slideHTML += `<div class="w-full text-left flex flex-col md:flex-row gap-6 items-center">
+                    <div class="flex-1">
+                        <h2 class="text-3xl font-bold mb-4">${slideData.title}</h2>
+                        <div class="text-gray-300 md:text-lg">${slideData.content}</div>
+                        ${slideData.explanation ? `<div class="mt-4 text-gray-400">${slideData.explanation}</div>` : ''}
+                    </div>
+                    <div class="flex-1 w-full">
+                        <pre class="fira-code code-block p-4 rounded-lg text-sm md:text-base whitespace-pre-wrap">${slideData.code}</pre>
+                    </div>
+                </div>`;
+            } else if (slideData.type === 'practice') {
+                 slideHTML += `<div class="w-full text-left">
+                    <h2 class="text-3xl font-bold mb-4">${slideData.title}</h2>
+                    <p class="text-gray-300 md:text-lg mb-6">${slideData.content}</p>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        ${slideData.steps ? `<ul class="space-y-2 flex-1">${slideData.steps.map((step, i) => `<li class="flex gap-2"><span class="text-blue-400 font-bold">${i+1}.</span><span>${step}</span></li>`).join('')}</ul>` : ''}
+                        <div class="flex-1">
+                             <pre class="fira-code code-block p-4 rounded-lg text-sm md:text-base">${slideData.code}</pre>
+                        </div>
+                    </div>
+                </div>`;
+            } else if (slideData.type === 'quiz') {
+                slideHTML += `
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">${slideData.title}</h2>
+                    <p class="text-lg text-gray-300 mb-4 max-w-2xl">${slideData.question}</p>
+                    ${slideData.code ? `<pre class="fira-code code-block p-4 rounded-lg text-left text-sm md:text-base my-4 max-w-md mx-auto">${slideData.code}</pre>` : ''}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 w-full max-w-lg">
+                        ${slideData.options.map((opt, i) => `<button onclick="handleQuizAnswer(${i})" class="btn-secondary p-4 rounded-lg text-lg text-left hover:bg-gray-600 w-full">${opt}</button>`).join('')}
+                    </div>
+                `;
+            } else if (slideData.type.startsWith('final_challenge')) {
+                const finalCodeContainerId = 'final-code-container';
+                const currentStep = parseInt(slideData.type.split('_').pop(), 10) || 0;
+                 slideHTML += `<div class="w-full text-left flex flex-col lg:flex-row gap-8">
+                    <div class="flex-1">
+                        <h2 class="text-3xl font-bold mb-4">${slideData.title}</h2>
+                        ${slideData.content ? `<div class="text-gray-300 md:text-lg">${slideData.content}</div>` : ''}
+                        ${slideData.question ? `<p class="text-lg text-gray-300 my-4">${slideData.question}</p>` : ''}
+                        ${slideData.placeholder ? `
+                            <div class="mt-4">
+                                <input id="challenge-input" type="text" class="fira-code bg-gray-900 border border-gray-600 rounded-lg p-3 w-full text-white" placeholder="${slideData.placeholder}">
+                                <button onclick="handleChallengeAnswer()" class="btn-primary mt-3 py-2 px-5 rounded-lg">Enviar</button>
+                            </div>
+                        ` : ''}
+                         ${slideData.icon ? `<div class="mx-auto bg-blue-500/20 p-4 rounded-full mt-6 w-20 h-20 flex items-center justify-center"><i data-lucide="${slideData.icon}" class="w-12 h-12 text-blue-400"></i></div>` : ''}
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-400 mb-2">Código en construcción:</p>
+                        <div id="${finalCodeContainerId}" class="fira-code code-block p-4 rounded-lg text-base h-72">
+                        </div>
+                    </div>
+                 </div>`;
+            } else if (slideData.type === 'outro') {
+                slideHTML += `
+                    <div class="bg-green-500/20 p-4 rounded-full mb-6"><i data-lucide="${slideData.icon}" class="w-12 h-12 text-green-400"></i></div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">${slideData.title}</h2>
+                    <div class="text-gray-300 md:text-lg max-w-2xl">${slideData.content}</div>
+                `;
+            }
+
+            slideHTML += `</div>`;
+            slidesContainer.innerHTML = slideHTML;
+            lucide.createIcons();
+            updateNavigation();
+
+            // After rendering, if it's a challenge step, populate the code
+            if (slideData.type.startsWith('final_challenge')) {
+                updateChallengeCode();
+            }
+        }
+
+        function updateNavigation() {
+            const progress = ((currentSlide + 1) / slidesData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            slideCounter.textContent = `${currentSlide + 1} / ${slidesData.length}`;
+            prevBtn.disabled = currentSlide === 0;
+            prevBtn.classList.toggle('opacity-50', currentSlide === 0);
+            
+            const isLastSlide = currentSlide === slidesData.length - 1;
+            const isChallenge = slidesData[currentSlide].type.startsWith('final_challenge_step');
+
+            nextBtn.textContent = isLastSlide ? 'Finalizar' : 'Siguiente';
+            nextBtn.innerHTML = isLastSlide ? 'Finalizar <i data-lucide="party-popper"></i>' : 'Siguiente <i data-lucide="arrow-right"></i>';
+            nextBtn.onclick = isLastSlide ? () => alert("¡Curso finalizado!") : nextSlide;
+            
+            // Disable next button on quiz and challenge slides until completed
+            const currentProgress = studentProgress[currentSlide];
+            if ((slidesData[currentSlide].type === 'quiz' && currentProgress !== 'correct') || (isChallenge && currentProgress !== 'correct')) {
+                 nextBtn.disabled = true;
+                 nextBtn.classList.add('opacity-50');
+            } else {
+                 nextBtn.disabled = false;
+                 nextBtn.classList.remove('opacity-50');
+            }
+            lucide.createIcons();
+        }
+        
+        function nextSlide() {
+            if (currentSlide < slidesData.length - 1) {
+                currentSlide++;
+                renderSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide();
+            }
+        }
+
+        function showHelp() {
+            helpContent.innerHTML = `<p>${slidesData[currentSlide].help || 'No hay ayuda disponible para esta diapositiva.'}</p>`;
+            helpModal.classList.remove('hidden');
+        }
+
+        function closeHelp() {
+            helpModal.classList.add('hidden');
+        }
+
+        function handleQuizAnswer(selectedIndex) {
+            const slideData = slidesData[currentSlide];
+            const isCorrect = selectedIndex === slideData.correct;
+            
+            if (isCorrect) {
+                studentProgress[currentSlide] = 'correct';
+                feedbackContent.innerHTML = `
+                    <div class="bg-green-800/80 p-8 rounded-2xl">
+                        <i data-lucide="check-circle" class="w-16 h-16 text-green-300 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-white">¡Correcto!</h3>
+                        <p class="text-green-200 mt-2">${slideData.feedback}</p>
+                        <button onclick="closeFeedback()" class="btn-primary mt-6 py-2 px-6 rounded-lg">Continuar</button>
+                    </div>`;
+            } else {
+                studentProgress[currentSlide] = 'incorrect';
+                feedbackContent.innerHTML = `
+                    <div class="bg-red-800/80 p-8 rounded-2xl">
+                        <i data-lucide="x-circle" class="w-16 h-16 text-red-300 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-white">¡Ups! Inténtalo de nuevo.</h3>
+                        <p class="text-red-200 mt-2">Esa no es la respuesta. Revisa el material e inténtalo otra vez.</p>
+                        <div class="flex gap-4 mt-6 justify-center">
+                            <button onclick="goToReview()" class="btn-secondary py-2 px-6 rounded-lg">Repasar</button>
+                            <button onclick="closeFeedback(false)" class="btn-primary py-2 px-6 rounded-lg">Volver a intentar</button>
+                        </div>
+                    </div>`;
+            }
+            feedbackModal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+        
+        function closeFeedback(updateNav = true) {
+            feedbackModal.classList.add('hidden');
+            if (updateNav) updateNavigation();
+        }
+
+        function goToReview() {
+            closeFeedback();
+            // Go back 2 slides for context
+            currentSlide = Math.max(0, currentSlide - 2);
+            renderSlide();
+        }
+        
+        // --- Final Challenge Logic ---
+        const challengeSolution = [
+            "saldo_tarjeta = 5000",
+            "costo_pasaje = 2950",
+            "if saldo_tarjeta >= costo_pasaje:",
+            "    print(\"Puede pasar. ¡Bienvenido!\")",
+            "    saldo_tarjeta = saldo_tarjeta - costo_pasaje",
+            "    print(\"Tu nuevo saldo es: \" + str(saldo_tarjeta))",
+            "else:",
+            "    print(\"Saldo insuficiente. Por favor recarga tu tarjeta.\")"
+        ];
+        let challengeLinesCorrect = 0;
+
+        function updateChallengeCode() {
+            const codeContainer = document.getElementById('final-code-container');
+            if (!codeContainer) return;
+
+            let codeHTML = '';
+            for (let i = 0; i < challengeLinesCorrect; i++) {
+                // Simple syntax highlighting
+                let line = challengeSolution[i];
+                line = line.replace(/(\bif\b|\belse\b)/g, '<span class="text-red-400">$1</span>');
+                line = line.replace(/(\bprint\b|\bstr\b)/g, '<span class="text-purple-400">$1</span>');
+                line = line.replace(/(".*?")/g, '<span class="text-green-400">$1</span>');
+                line = line.replace(/(\d+)/g, '<span class="text-yellow-400">$1</span>');
+                codeHTML += `<div class="whitespace-pre">${line}</div>`;
+            }
+            codeContainer.innerHTML = codeHTML;
+        }
+        
+        function handleChallengeAnswer() {
+            const input = document.getElementById('challenge-input');
+            const userAnswer = input.value.trim();
+            const slideData = slidesData[currentSlide];
+            
+            // Normalize answer: remove multiple spaces and check
+            const normalizedCorrect = slideData.correctAnswer.replace(/\s+/g, ' ');
+            const normalizedUser = userAnswer.replace(/\s+/g, ' ');
+
+            if (normalizedUser === normalizedCorrect) {
+                studentProgress[currentSlide] = 'correct';
+                challengeLinesCorrect++;
+                showFeedback(true, "¡Línea correcta! Vamos con la siguiente.");
+                updateNavigation(); // This will enable the next button
+            } else {
+                 showFeedback(false, "Esa línea no es correcta. Fíjate bien en la sintaxis y los nombres de las variables.");
+            }
+        }
+        
+        function showFeedback(isCorrect, message) {
+            if (isCorrect) {
+                 feedbackContent.innerHTML = `
+                    <div class="bg-green-800/80 p-8 rounded-2xl">
+                        <i data-lucide="check-circle" class="w-16 h-16 text-green-300 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-white">¡Correcto!</h3>
+                        <p class="text-green-200 mt-2">${message}</p>
+                        <button onclick="closeFeedbackAndContinue()" class="btn-primary mt-6 py-2 px-6 rounded-lg">Continuar</button>
+                    </div>`;
+            } else {
+                 feedbackContent.innerHTML = `
+                    <div class="bg-red-800/80 p-8 rounded-2xl">
+                        <i data-lucide="x-circle" class="w-16 h-16 text-red-300 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-white">Inténtalo de nuevo</h3>
+                        <p class="text-red-200 mt-2">${message}</p>
+                        <button onclick="closeFeedback(false)" class="btn-primary mt-6 py-2 px-6 rounded-lg">Volver</button>
+                    </div>`;
+            }
+            feedbackModal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeFeedbackAndContinue() {
+            closeFeedback(false);
+            if (slidesData[currentSlide].type.startsWith('final_challenge_step') && studentProgress[currentSlide] === 'correct') {
+                nextSlide();
+            }
+        }
+
+        // ===================================
+        // INITIALIZATION
+        // ===================================
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        helpBtn.addEventListener('click', showHelp);
+        closeHelpBtn.addEventListener('click', closeHelp);
+        // Close modal on outside click
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) closeHelp();
+        });
+         feedbackModal.addEventListener('click', (e) => {
+            if (e.target === feedbackModal) closeFeedback(true);
+        });
+        
+        // Find the correct starting point for challenge lines correct
+        let lastCorrectChallenge = -1;
+        for (let i = 0; i < slidesData.length; i++) {
+            if (slidesData[i].type.startsWith('final_challenge_step') && studentProgress[i] === 'correct') {
+                lastCorrectChallenge = i;
+            }
+        }
+        if(lastCorrectChallenge !== -1) {
+           const slideData = slidesData[lastCorrectChallenge];
+           challengeLinesCorrect = slideData.codeLine;
+        }
+
+
+        renderSlide();
+    </script>
+</body>
+</html>
