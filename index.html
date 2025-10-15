@@ -3,685 +3,898 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía Interactiva: Módulo 2 - Dando Órdenes con Lógica</title>
+    <title>CodeBogotá - Módulo 2: Dando Órdenes con Lógica</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #111827; /* Dark blue-gray */
-            color: #E5E7EB; /* Light gray */
+            background-color: #0D1117; /* GitHub Dark Dimmed */
+            color: #C9D1D9;
         }
-        .fira-code {
+        .font-fira {
             font-family: 'Fira Code', monospace;
         }
+        .neon-text-cyan {
+            text-shadow: 0 0 5px rgba(56, 189, 248, 0.7), 0 0 10px rgba(56, 189, 248, 0.7);
+        }
+        .neon-shadow-cyan {
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+        .neon-border-cyan {
+            border-color: #38bdf8;
+            box-shadow: 0 0 5px rgba(56, 189, 248, 0.6);
+        }
         .slide {
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
         }
         .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .help-button {
+            transition: all 0.3s ease;
+        }
+        .help-button:hover {
+            transform: scale(1.1) rotate(10deg);
+            background-color: #38bdf8;
+            color: #0D1117;
+        }
+        /* Estilos para el código en la evaluación final */
+        .code-line {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .code-line.visible {
             opacity: 1;
-            position: relative;
-        }
-        .btn-primary {
-            background-color: #3B82F6;
-            color: white;
-            transition: background-color 0.3s;
-        }
-        .btn-primary:hover {
-            background-color: #2563EB;
-        }
-        .btn-secondary {
-            background-color: #4B5563;
-            color: white;
-            transition: background-color 0.3s;
-        }
-        .btn-secondary:hover {
-            background-color: #374151;
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .code-block {
-            background-color: #1F2937;
-            border-left: 4px solid #3B82F6;
-        }
-        /* Custom scrollbar for help modal */
-        #help-content::-webkit-scrollbar {
-            width: 8px;
-        }
-        #help-content::-webkit-scrollbar-track {
-            background: #1F2937;
-        }
-        #help-content::-webkit-scrollbar-thumb {
-            background-color: #3B82F6;
-            border-radius: 10px;
-            border: 2px solid #1F2937;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body class="w-full min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- Main Container -->
-    <div class="w-full max-w-4xl h-[70vh] min-h-[500px] relative glass-effect rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-        
-        <!-- Header with Progress Bar -->
-        <div class="p-4 border-b border-gray-700">
-            <h1 class="text-xl md:text-2xl font-bold text-center text-blue-400">Módulo 2: Dando Órdenes con Lógica</h1>
-            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
-                <div id="progress-bar" class="bg-blue-500 h-2.5 rounded-full" style="width: 0%; transition: width 0.5s;"></div>
+    <div class="w-full max-w-5xl bg-[#161B22] border border-gray-700 rounded-2xl shadow-2xl shadow-black/50 flex flex-col overflow-hidden">
+        <!-- Encabezado y Barra de Progreso -->
+        <header class="p-4 border-b border-gray-700">
+            <h1 class="text-xl md:text-2xl font-bold text-sky-400 neon-text-cyan text-center">Módulo 2: Dando Órdenes con Lógica</h1>
+            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-3">
+                <div id="progressBar" class="bg-sky-500 h-2.5 rounded-full transition-all duration-500 ease-in-out" style="width: 0%"></div>
             </div>
-        </div>
+        </header>
 
-        <!-- Slides Container -->
-        <div id="slides-container" class="flex-grow relative p-6 md:p-8 overflow-y-auto">
-            <!-- Slides will be injected here by JavaScript -->
-        </div>
+        <!-- Contenedor de Diapositivas -->
+        <main id="slides-container" class="flex-grow p-6 md:p-8 min-h-[500px] flex items-center justify-center">
+            <!-- Las diapositivas se insertarán aquí por JavaScript -->
+        </main>
 
-        <!-- Navigation -->
-        <div class="flex justify-between items-center p-4 border-t border-gray-700 bg-gray-900/30">
-            <button id="prev-btn" class="btn-secondary py-2 px-4 rounded-lg flex items-center gap-2"><i data-lucide="arrow-left"></i> Anterior</button>
-            <span id="slide-counter" class="text-sm text-gray-400">1 / N</span>
-            <button id="next-btn" class="btn-primary py-2 px-4 rounded-lg flex items-center gap-2">Siguiente <i data-lucide="arrow-right"></i></button>
-        </div>
+        <!-- Navegación -->
+        <footer class="p-4 bg-[#010409] border-t border-gray-700 flex justify-between items-center">
+            <button id="prevBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                &larr; Anterior
+            </button>
+            <span id="slideCounter" class="text-sm text-gray-400"></span>
+            <button id="nextBtn" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-lg transition-colors neon-shadow-cyan disabled:opacity-50 disabled:cursor-not-allowed">
+                Siguiente &rarr;
+            </button>
+        </footer>
     </div>
 
-    <!-- Help Button -->
-    <button id="help-btn" class="fixed bottom-5 right-5 btn-primary w-14 h-14 rounded-full flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-        <i data-lucide="help-circle" class="w-8 h-8"></i>
-    </button>
-
-    <!-- Help Modal -->
-    <div id="help-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-            <div class="flex justify-between items-center p-4 border-b border-gray-600">
-                <h2 class="text-xl font-bold text-blue-400 flex items-center gap-2"><i data-lucide="lightbulb"></i> Guía de Ayuda</h2>
-                <button id="close-help-btn" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <div id="help-content" class="p-6 overflow-y-auto">
-                <!-- Help text will be injected here -->
+    <!-- Modal de Ayuda -->
+    <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-[#161B22] max-w-2xl w-full rounded-2xl border border-sky-500 neon-shadow-cyan p-6 relative">
+            <button id="closeHelpModal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+            <div class="flex items-start gap-4">
+                <div class="text-4xl">💡</div>
+                <div>
+                    <h3 class="text-xl font-bold text-sky-400 mb-2">¡Una ayudita!</h3>
+                    <p id="helpModalContent" class="text-gray-300"></p>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Feedback Modal -->
-    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
-        <div id="feedback-content" class="text-center p-8 rounded-2xl shadow-xl w-full max-w-md">
-            <!-- Feedback will be injected here -->
+    <!-- Modal de Bienvenida/Resumen -->
+    <div id="welcomeModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-[#161B22] max-w-lg w-full rounded-2xl border border-gray-700 p-8 text-center">
+            <h2 class="text-2xl font-bold text-sky-400 mb-4 neon-text-cyan">¡Bienvenido a CodeBogotá!</h2>
+            <p id="welcomeMessage" class="text-gray-300 mb-6">Estás a punto de iniciar el Módulo 2. Aquí aprenderás a darle a tus programas el poder de "razonar".</p>
+            <div id="welcomeButtons">
+                <button id="startFreshBtn" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-6 rounded-lg transition-colors w-full">Empezar Módulo</button>
+            </div>
         </div>
     </div>
 
 
-    <script>
-        const slidesContainer = document.getElementById('slides-container');
-        const progressBar = document.getElementById('progress-bar');
-        const slideCounter = document.getElementById('slide-counter');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const helpBtn = document.getElementById('help-btn');
-        const helpModal = document.getElementById('help-modal');
-        const closeHelpBtn = document.getElementById('close-help-btn');
-        const helpContent = document.getElementById('help-content');
-        const feedbackModal = document.getElementById('feedback-modal');
-        const feedbackContent = document.getElementById('feedback-content');
+<script>
+const slidesContainer = document.getElementById('slides-container');
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+const progressBar = document.getElementById('progressBar');
+const slideCounter = document.getElementById('slideCounter');
+const helpModal = document.getElementById('helpModal');
+const helpModalContent = document.getElementById('helpModalContent');
+const closeHelpModal = document.getElementById('closeHelpModal');
+const welcomeModal = document.getElementById('welcomeModal');
 
-        let currentSlide = 0;
-        let studentProgress = {}; // To store quiz results
+let currentSlide = 0;
+let slidesData = []; // Se llenará con la data de las diapositivas
 
-        // ===================================
-        // ALL SLIDE DATA
-        // ===================================
-        const slidesData = [
-            // --- Intro ---
-            {
-                type: 'intro',
-                title: '¡Bienvenido al Módulo 2!',
-                content: `<p class="text-lg mb-4">¡Felicitaciones por llegar hasta aquí! Ya sabes cómo guardar información. Ahora, vamos a enseñarle al computador a "razonar" y tomar decisiones.</p><p>Imagina el tráfico de Bogotá. No siempre tomas la misma ruta, ¿verdad? Si la Séptima está congestionada, tomas otra avenida. Eso es tomar una decisión basada en una condición. ¡Hoy le daremos ese poder a nuestros programas!</p>`,
-                image: 'https://images.unsplash.com/photo-1583190002196-5387431505e3?q=80&w=800&auto=format&fit=crop',
-                help: `¡Hola! En este módulo, vamos a dejar de darle al computador órdenes que siempre se cumplen igual. Le enseñaremos a evaluar situaciones. Por ejemplo, en vez de solo decir "imprime esto", le diremos "SI pasa esto, imprime una cosa, y SI NO, imprime otra". Es como darle inteligencia a tu código.`
-            },
-            {
-                type: 'objectives',
-                title: 'Objetivos del Módulo',
-                items: [
-                    'Entender y usar <strong>condicionales (if, elif, else)</strong> para tomar decisiones.',
-                    'Comprender los valores de verdad <strong>(True / False)</strong> y los operadores de comparación.',
-                    'Aprender a usar <strong>bucles (for)</strong> para repetir tareas automáticamente.',
-                    'Combinar condicionales y bucles para crear programas más potentes.'
-                ],
-                help: `Estos son los "superpoderes" que obtendrás al final del módulo. El 'if' es para decidir, 'True/False' son las únicas respuestas que el computador entiende para una pregunta (sí o no), y el 'for' es para no tener que escribir lo mismo mil veces. Es como decirle "repite esto 10 veces" sin copiar y pegar.`
-            },
-            // --- Part 1: Conditionals ---
-            {
-                type: 'concept',
-                title: 'Parte 1: Tomando Decisiones',
-                content: `<p class="text-lg">El primer paso para que un programa "piense" es enseñarle a evaluar si algo es <strong>Verdadero (True)</strong> o <strong>Falso (False)</strong>.</p><p>En programación, a estos dos valores se les llama <strong>Booleanos</strong>. Son la base de todas las decisiones.</p>`,
-                icon: 'git-branch',
-                help: `Un 'booleano' suena complicado, pero es súper simple. Es solo una forma técnica de decir "sí o no". El computador no entiende de "quizás" o "a veces". Para él, algo o es verdadero (True) o es falso (False). No hay más opciones. Por ejemplo, la pregunta "¿Mi edad es mayor a 18?" solo tiene dos respuestas posibles para el computador: True o False.`
-            },
-            {
-                type: 'concept_code',
-                title: 'Operadores de Comparación',
-                content: `Para hacer preguntas, usamos los operadores de comparación. El resultado de usarlos siempre es <strong>True</strong> o <strong>False</strong>.`,
-                code: `==  : ¿Es igual a?         -> edad == 18
-!=  : ¿Es diferente a?      -> clima != "soleado"
->   : ¿Es mayor que?        -> temperatura > 15
-<   : ¿Es menor que?        -> precio < 5000
->=  : ¿Es mayor o igual que? -> edad >= 18
-<=  : ¿Es menor o igual que? -> pasajeros <= 5`,
-                help: `Estos símbolos son las herramientas para hacerle preguntas al computador. El más importante de recordar es '=='. ¡Usa dos iguales para preguntar! Si usas solo uno ('='), no estás preguntando, le estás dando una orden para guardar un valor. Es un error muy común al empezar, ¡así que ponle atención!`
-            },
-            {
-                type: 'concept',
-                title: 'La Sintaxis de la Decisión: if, elif, else',
-                content: `<ul class="space-y-4 text-lg">
-                    <li><span class="fira-code text-blue-400 font-bold">if</span> (Si...): La condición principal. Si es <strong>True</strong>, se ejecuta su código.</li>
-                    <li><span class="fira-code text-yellow-400 font-bold">elif</span> (Si no, si...): El "plan B", "C", etc. Revisa otra condición si la anterior fue <strong>False</strong>.</li>
-                    <li><span class="fira-code text-red-400 font-bold">else</span> (Si no...): El último recurso. Se ejecuta si NINGUNA de las condiciones anteriores fue <strong>True</strong>.</li>
-                </ul>`,
-                icon: 'list-tree',
-                help: `Piensa en esto como cuando pides comida: 'if' hay ajiaco, pido ajiaco. 'elif' hay bandeja paisa, pido bandeja paisa. 'else', pido lo que sea que tengan. El programa revisa las opciones en ese orden. Tan pronto como una es verdadera, ejecuta esa y se olvida de las demás.`
-            },
-            {
-                type: 'concept_critical',
-                title: '¡LA REGLA DE ORO: La Indentación!',
-                content: `<p class="text-xl">En Python, el espacio al principio de una línea es <strong>CRUCIAL</strong>. Se llama <strong>indentación</strong>.</p>
-                <p>La indentación (usualmente 4 espacios) le dice a Python qué código pertenece a un <strong>if</strong>, <strong>elif</strong>, o <strong>else</strong>. Sin la indentación correcta, el programa no funcionará.</p>`,
-                code: `clima = "lluvioso"
+// --- DATA DE LAS DIAPOSITIVAS ---
+// Aquí se define el contenido de cada diapositiva
+slidesData = [
+    // Introducción
+    {
+        title: "Módulo 2: Dando Órdenes con Lógica 🧠",
+        content: `
+            <p class="text-xl mb-4">¡Felicitaciones por superar el Módulo 1! Ya sabes hablarle al computador.</p>
+            <p class="mb-6">Ahora, vamos a enseñarle a "razonar". Prepárate para darle a tus programas el superpoder de tomar decisiones y repetir tareas.</p>
+            <div class="bg-[#0D1117] p-4 rounded-lg border border-gray-700 italic">
+                <strong>Piensa en esto:</strong> No siempre tomas la misma ruta por Bogotá. Si la Séptima está imposible, coges la Circunvalar. Eso mismo le enseñaremos a Python.
+            </div>
+        `,
+        help: "¡Hola! En el módulo anterior, aprendimos a crear 'cajitas' para guardar información (las variables). Ahora, vamos a subir el nivel. Haremos que nuestros programas dejen de ser una simple lista de instrucciones y empiecen a pensar por sí mismos. ¡Va a ser genial!"
+    },
+    {
+        title: "Tu Hoja de Ruta para este Módulo 🗺️",
+        content: `
+            <p class="mb-6">Al finalizar, serás capaz de:</p>
+            <ul class="space-y-4 text-left max-w-md mx-auto">
+                <li class="flex items-start gap-3"><span class="text-2xl">🚦</span> <div><strong>Crear programas que tomen decisiones</strong> usando <code class="font-fira text-sky-400">if</code>, <code class="font-fira text-sky-400">elif</code>, y <code class="font-fira text-sky-400">else</code>.</div></li>
+                <li class="flex items-start gap-3"><span class="text-2xl">✅</span> <div><strong>Entender la diferencia entre Verdadero y Falso</strong> (<code class="font-fira text-orange-400">True</code>/<code class="font-fira text-orange-400">False</code>) para el computador.</div></li>
+                <li class="flex items-start gap-3"><span class="text-2xl">🔄</span> <div><strong>Repetir tareas automáticamente</strong> con bucles <code class="font-fira text-sky-400">for</code> para no escribir código de más.</div></li>
+                <li class="flex items-start gap-3"><span class="text-2xl">🧩</span> <div><strong>Combinar decisiones y repeticiones</strong> para crear soluciones más inteligentes.</div></li>
+            </ul>
+        `,
+        help: "Esta es nuestra 'lista de mercado' de conocimientos. Cada punto es una habilidad clave. Piensa en el primero (decisiones) como enseñarle al programa a elegir caminos. El segundo (Verdadero/Falso) es la brújula que usa para decidir. El tercero (repetir tareas) es ponerlo en 'piloto automático'. Y el último, es donde unimos todo para crear cosas increíbles."
+    },
+    // Parte 1: Condicionales
+    {
+        title: "PARTE 1: Tomando Decisiones",
+        content: `
+            <div class="text-center">
+                <p class="text-6xl mb-4">🚦</p>
+                <h2 class="text-3xl font-bold text-sky-400 mb-2">Condicionales: <code class="font-fira">if</code>, <code class="font-fira">elif</code>, <code class="font-fira">else</code></h2>
+                <p>Le enseñaremos a tu programa a evaluar una condición y actuar de una u otra forma, como cuando decides si llevar sombrilla dependiendo del impredecible clima bogotano.</p>
+            </div>
+        `,
+        help: "Vamos a empezar con la base de la inteligencia de un programa: su capacidad de decidir. Sin esto, un programa solo podría hacer una cosa de la misma manera siempre. ¡Aburrido! Con los condicionales, le damos vida."
+    },
+    {
+        title: "¿Verdadero o Falso? La Base de Todo",
+        content: `
+            <p class="mb-6">Antes de decidir, el computador solo entiende dos cosas: <code class="font-fira text-green-400 text-xl">True</code> (verdadero) o <code class="font-fira text-red-400 text-xl">False</code> (falso).</p>
+            <p class="mb-8">A estos valores los llamamos <strong>Booleanos</strong>.</p>
+            <div class="flex gap-8 justify-center">
+                <div class="bg-green-500/20 border border-green-500 p-6 rounded-lg text-center">
+                    <p class="text-5xl mb-2">✅</p>
+                    <p class="text-2xl font-fira text-green-400">True</p>
+                </div>
+                <div class="bg-red-500/20 border border-red-500 p-6 rounded-lg text-center">
+                    <p class="text-5xl mb-2">❌</p>
+                    <p class="text-2xl font-fira text-red-400">False</p>
+                </div>
+            </div>
+            <p class="mt-8 italic">Es como preguntar: "¿Está lloviendo en Bogotá?" La respuesta solo puede ser sí (<code class="font-fira text-green-400">True</code>) o no (<code class="font-fira text-red-400">False</code>).</p>
+        `,
+        help: "Los 'Booleanos' suenan complicados, pero son la idea más simple y poderosa. Son las respuestas a una pregunta de sí o no. Un computador, en su nivel más básico, funciona con millones de interruptores que están encendidos (True) o apagados (False). Para que tome una decisión, debemos darle una pregunta que pueda responder con un simple 'sí' o 'no'."
+    },
+    {
+        title: "Las Herramientas para Preguntar ⚖️",
+        content: `
+            <p class="mb-6">Para hacerle preguntas a Python, usamos los <strong>operadores de comparación</strong>:</p>
+            <div class="space-y-4 font-fira text-lg text-left max-w-lg mx-auto bg-[#0D1117] p-6 rounded-lg border border-gray-700">
+                <p><code class="text-sky-400 text-2xl font-bold">==</code> &nbsp; <span class="text-gray-400">// ¿Es <strong>igual</strong> a?</span> &nbsp; -> &nbsp; <code class="text-yellow-400">dia == "domingo"</code></p>
+                <p class="pl-4 text-sm text-red-400"><strong>¡OJO!</strong> Un solo igual (<code class="font-fira">=</code>) asigna un valor. Dos iguales (<code class="font-fira">==</code>) preguntan.</p>
+                <hr class="border-gray-600 my-3">
+                <p><code class="text-sky-400 text-2xl font-bold">!=</code> &nbsp; <span class="text-gray-400">// ¿Es <strong>diferente</strong> de?</span> &nbsp; -> &nbsp; <code class="text-yellow-400">clima != "soleado"</code></p>
+            </div>
+        `,
+        help: "Piénsalo como si hablaras con un niño muy literal. Si le dices `edad = 18`, le ordenas: 'Tu edad AHORA ES 18'. Pero si le dices `edad == 18`, le preguntas: 'Oye, ¿es verdad que tu edad es 18?'. Él te responderá `True` o `False`. El `!=` es para preguntar si algo NO es de cierta manera."
+    },
+     {
+        title: "Más Herramientas: Comparando Números 🔢",
+        content: `
+            <p class="mb-6">Y para números, usamos estos:</p>
+            <div class="space-y-3 font-fira text-lg text-left max-w-lg mx-auto bg-[#0D1117] p-6 rounded-lg border border-gray-700">
+                <p><code class="text-sky-400 text-2xl font-bold">></code> &nbsp;&nbsp; <span class="text-gray-400">// ¿Es <strong>mayor</strong> que?</span> &nbsp; -> &nbsp; <code class="text-yellow-400">temperatura > 15</code></p>
+                <p><code class="text-sky-400 text-2xl font-bold"><</code> &nbsp;&nbsp; <span class="text-gray-400">// ¿Es <strong>menor</strong> que?</span> &nbsp; -> &nbsp; <code class="text-yellow-400">precio < 5000</code></p>
+                <hr class="border-gray-600 my-2">
+                <p><code class="text-sky-400 text-2xl font-bold">>=</code> &nbsp; <span class="text-gray-400">// ¿Es <strong>mayor o igual</strong> que?</span> -> <code class="text-yellow-400">edad >= 18</code></p>
+                <p><code class="text-sky-400 text-2xl font-bold"><=</code> &nbsp; <span class="text-gray-400">// ¿Es <strong>menor o igual</strong> que?</span> -> <code class="text-yellow-400">pasajeros <= 5</code></p>
+            </div>
+        `,
+        help: "Estos son súper directos, ¡son los mismos que viste en el colegio! El truco está en el 'o igual'. Por ejemplo, si tienes 18 años, la pregunta `edad > 18` sería `False` (porque 18 no es *mayor* que 18). Pero `edad >= 18` sería `True` (porque 18 es *igual* a 18). Esa pequeña línea debajo del símbolo puede cambiar todo."
+    },
+    {
+        title: "Plan A: La Condición `if`",
+        content: `
+            <p class="mb-4">La estructura <code class="font-fira text-xl text-sky-400">if</code> (Si...) es tu condición principal.</p>
+            <p class="mb-6 italic">"<strong>Si</strong> esta condición es <code class="font-fira text-green-400">True</code>, <strong>entonces</strong> haz este pedazo de código."</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-lg mx-auto">
+                <pre><code class="language-python">
+<span class="text-purple-400">edad</span> = <span class="text-orange-400">20</span>
 
-if clima == "soleado":
-    # Este código está INDENTADO.
-    # Pertenece al 'if'.
-    print("¡Vamos a la ciclovía!")
+<span class="text-pink-400">if</span> <span class="text-purple-400">edad</span> >= <span class="text-orange-400">18</span>:
+  <span class="text-gray-500"># Si la respuesta es True, se ejecuta esta línea.</span>
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Puedes entrar a la fiesta."</span><span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+        `,
+        help: "El `if` es el portero de la discoteca. Tiene una regla en su cabeza (la condición: `edad >= 18`). Cuando llegas, te mira (evalúa la condición) y si cumples la regla (True), te deja pasar (ejecuta el código de adentro). Si no la cumples, por ahora, simplemente te ignora y sigue de largo."
+    },
+    {
+        title: "Plan B: La Alternativa `else`",
+        content: `
+            <p class="mb-4">El <code class="font-fira text-xl text-sky-400">else</code> (Si no...) es tu plan B. Se ejecuta <strong>solo</strong> si la condición del <code class="font-fira">if</code> fue <code class="font-fira text-red-400">False</code>.</p>
+            <p class="mb-6 italic">"<strong>Si</strong> la condición principal no se cumplió, <strong>entonces</strong> haz este otro código."</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-lg mx-auto">
+                <pre><code class="language-python">
+<span class="text-purple-400">edad</span> = <span class="text-orange-400">15</span>
+
+<span class="text-pink-400">if</span> <span class="text-purple-400">edad</span> >= <span class="text-orange-400">18</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Puedes entrar a la fiesta."</span><span class="text-green-400">)</span>
+<span class="text-pink-400">else</span>:
+  <span class="text-gray-500"># Como 15 >= 18 es False, el programa salta aquí.</span>
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Lo sentimos, debes esperar un poco más."</span><span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+        `,
+        help: "Siguiendo con el ejemplo del portero, el `else` es lo que te dice si no te deja entrar. El `if` es la condición para entrar. Si no la cumples, el `else` se activa y te da el mensaje de 'no puedes pasar'. Un `if` y un `else` juntos crean un camino con dos rutas posibles."
+    },
+    {
+        title: "Planes C, D, E... La Opción `elif`",
+        content: `
+            <p class="mb-4">El <code class="font-fira text-xl text-sky-400">elif</code> (Si no, si...) te permite revisar múltiples condiciones en orden.</p>
+            <p class="mb-6 italic">"<strong>Si</strong> el <code class="font-fira">if</code> no funcionó, <strong>revisa si</strong> esta otra condición es verdad..."</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-xl mx-auto">
+                <pre><code class="language-python">
+<span class="text-purple-400">clima</span> = <span class="text-yellow-400">"lluvioso"</span>
+
+<span class="text-pink-400">if</span> <span class="text-purple-400">clima</span> == <span class="text-yellow-400">"soleado"</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"¡Día de ciclovía!"</span><span class="text-green-400">)</span>
+<span class="text-pink-400">elif</span> <span class="text-purple-400">clima</span> == <span class="text-yellow-400">"lluvioso"</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Parce, no olvide la sombrilla."</span><span class="text-green-400">)</span>
+<span class="text-pink-400">else</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Mejor lleve chaqueta."</span><span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+        `,
+        help: "Imagina que buscas un bus. Primero te preguntas (if), ¿pasa el M86? Si no, te preguntas (elif), ¿pasa el L82? Si tampoco, tomas tu última opción (else), que es tomar un taxi. Python hace lo mismo: revisa las condiciones en orden y se detiene en la primera que sea `True`. Si ninguna lo es, se va por el `else`."
+    },
+    {
+        title: "¡LA REGLA DE ORO: INDENTACIÓN! 📏",
+        content: `
+            <p class="mb-4">En Python, el espacio al principio de una línea lo es todo. Se llama <strong>indentación</strong>.</p>
+            <p class="mb-6">La indentación le dice a Python <strong>qué código pertenece</strong> a un <code class="font-fira">if</code>, <code class="font-fira">elif</code>, o <code class="font-fira">else</code>. Si lo haces mal, <strong>¡el programa no funcionará!</strong></p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-xl mx-auto">
+                <pre><code class="language-python">
+<span class="text-pink-400">if</span> <span class="text-purple-400">clima</span> == <span class="text-yellow-400">"soleado"</span>:
+    <span class="text-gray-500"># Este print ESTÁ INDENTADO.</span>
+    <span class="text-gray-500"># Pertenece al if.</span>
+    <span class="text-green-400">print(</span><span class="text-yellow-400">"¡Usa bloqueador solar!"</span><span class="text-green-400">)</span>
+
+<span class="text-green-400">print(</span><span class="text-yellow-400">"Que tengas un buen día."</span><span class="text-green-400">)</span> <span class="text-gray-500">// Este no, se ejecuta siempre.</span>
+                </code></pre>
+            </div>
+        `,
+        help: "Esta es la regla que más dolores de cabeza da al principio, pero es súper lógica. La indentación es como los márgenes en un esquema. El texto que está más a la derecha 'depende' del texto que está más a su izquierda. En Python, el código 'metido' hacia la derecha con espacios depende de la línea de `if` o `else` de arriba. Es la forma visual de organizar los bloques de código."
+    },
+    // Práctica guiada: Pico y Placa
+    {
+        title: "Práctica: Simulador de Pico y Placa 🚗",
+        content: `
+            <p class="mb-6">Vamos a crear un programa que nos diga si un carro tiene restricción.</p>
+            <p class="font-bold text-lg mb-2">Paso 1: Guardar el último dígito.</p>
+            <p class="mb-4">Creamos una variable para guardar el número.</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-lg mx-auto">
+                <pre><code class="language-python">
+<span class="text-purple-400">ultimo_digito_placa</span> = <span class="text-orange-400">7</span>
+<span class="text-green-400">print(</span><span class="text-yellow-400">"Revisando el dígito: "</span> + <span class="text-blue-400">str</span>(<span class="text-purple-400">ultimo_digito_placa</span>)<span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+            <p class="mt-4 text-sm text-gray-400">*<code class="font-fira text-blue-400">str()</code> convierte el número 7 en el texto "7" para poder unirlo al mensaje.</p>
+        `,
+        help: "`str()` es como un traductor. La función `print` puede mostrar texto, pero no le gusta cuando intentas 'sumar' un texto con un número. Es como intentar sumar 'manzana' + 5. Al usar `str()`, le decimos: 'Oye, Python, convierte este número en un carácter de texto para que `print` lo entienda'."
+    },
+    {
+        title: "Práctica: Simulador de Pico y Placa 🚗",
+        content: `
+            <p class="font-bold text-lg mb-2">Paso 2: Usar <code class="font-fira">if</code> y <code class="font-fira">else</code>.</p>
+            <p class="mb-4">Supongamos que los dígitos del 1 al 5 tienen pico y placa.</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-xl mx-auto">
+                <pre><code class="language-python">
+<span class="text-purple-400">ultimo_digito_placa</span> = <span class="text-orange-400">7</span>
+<span class="text-green-400">print(</span><span class="text-yellow-400">"Revisando el dígito: "</span> + <span class="text-blue-400">str</span>(<span class="text-purple-400">ultimo_digito_placa</span>)<span class="text-green-400">)</span>
+
+<span class="text-pink-400">if</span> <span class="text-purple-400">ultimo_digito_placa</span> <= <span class="text-orange-400">5</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"¡Ojo! Este carro tiene Pico y Placa."</span><span class="text-green-400">)</span>
+<span class="text-pink-400">else</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"El carro puede salir sin problema."</span><span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+            <p class="mt-4">Con el dígito 7, ¿qué crees que pasará?</p>
+        `,
+        help: "Analicemos la condición: `ultimo_digito_placa <= 5`. Python reemplaza la variable por su valor: `7 <= 5`. Luego se pregunta, ¿es 7 menor o igual que 5? La respuesta es `False`. Como el `if` resultó falso, Python ignora su código y salta directamente al bloque del `else`."
+    },
+    {
+        title: "Práctica: Simulador de Pico y Placa 🚗",
+        content: `
+            <p class="font-bold text-lg mb-4">¡A experimentar!</p>
+            <p class="mb-4">El resultado con el dígito 7 es:</p>
+            <div class="font-fira text-left bg-black p-4 rounded-lg border border-gray-700 max-w-md mx-auto">
+                <p class="text-green-400">> Revisando el dígito: 7</p>
+                <p class="text-white">> El carro puede salir sin problema.</p>
+            </div>
+            <p class="mt-6">Ahora, en tu cabeza, cambia el valor de <code class="font-fira">ultimo_digito_placa</code> a <strong>3</strong>. ¿Qué resultado obtendrías?</p>
+        `,
+        help: "¡Lo lograste! Este es el núcleo de la programación: crear reglas y dejar que el computador las siga. Si cambias el número a 3, la condición `3 <= 5` será `True`, y verás cómo el programa toma el otro camino, el del `if`, y te muestra el mensaje de restricción. Estás controlando el flujo de tu programa."
+    },
+    // Checkpoint 1
+    {
+        title: "checkpoint ! Punto de Control 🧐",
+        type: 'quiz',
+        question: 'Dado el siguiente código, ¿qué mensaje se imprimirá en la pantalla?',
+        code: `
+temperatura = 22
+if temperatura > 25:
+  print("¡Día caluroso!")
+elif temperatura > 18:
+  print("¡Clima agradable!")
 else:
-    # Este código también está INDENTADO.
-    # Pertenece al 'else'.
-    print("Mejor nos quedamos en casa.")`,
-                help: `¡Esto es lo más importante de Python! Ese "espacio" o "sangría" no es para que se vea bonito. Es una regla obligatoria. Es la forma que tiene Python de entender qué órdenes están dentro de qué condición. Si no pones ese espacio, es como si le hablaras en otro idioma, no te va a entender y te dará un error.`
-            },
-             {
-                type: 'practice',
-                title: 'Práctica: Simulador de Pico y Placa',
-                content: 'Vamos a crear un programa que nos diga si un carro con una placa terminada en cierto número tiene restricción. Hoy, supondremos que los dígitos del 1 al 5 tienen Pico y Placa.',
-                steps: [
-                    '<strong>Paso 1:</strong> Guarda el último dígito en una variable.',
-                    '<strong>Paso 2:</strong> Escribe el `if`. La condición debe preguntar si el dígito es menor o igual a 5.',
-                    '<strong>Paso 3:</strong> Dentro del `if`, imprime el mensaje de restricción.',
-                    '<strong>Paso 4:</strong> Añade el `else` para los carros que sí pueden salir.'
-                ],
-                code: `ultimo_digito_placa = 7
-
-if ultimo_digito_placa <= 5:
-    print("¡Ojo! Este carro tiene Pico y Placa.")
+  print("¡Hace frío!")
+        `,
+        options: ["¡Día caluroso!", "¡Clima agradable!", "¡Hace frío!", "Ninguno, hay un error."],
+        answer: 1,
+        feedback: {
+            correct: "¡Correcto! Python primero revisa `22 > 25` (Falso). Luego pasa al `elif` y revisa `22 > 18` (Verdadero), así que imprime '¡Clima agradable!' y se detiene.",
+            incorrect: "¡Casi! Revisa las condiciones en orden. La primera que sea verdadera es la que se ejecuta. Python revisa `22 > 25` (falso), luego `22 > 18` (verdadero) y se detiene ahí."
+        },
+        help: "Recuerda que Python lee el código de arriba hacia abajo. En una cadena de `if/elif/else`, tan pronto como encuentra una condición que es `True`, ejecuta el código de ese bloque y luego ignora por completo el resto de los `elif` y el `else` de esa cadena."
+    },
+    // Checkpoint 1.5 (Práctica Autónoma)
+    {
+        title: "checkpoint ! ¡Tu Turno! 🥳",
+        type: 'quiz',
+        question: 'Quieres un programa que imprima "Puedes entrar a la fiesta" si la edad es 18 o más, y "Debes esperar" si no. Si `edad = 17`, ¿qué se imprime?',
+        code: `
+edad = 17
+if edad >= 18:
+  print("Puedes entrar a la fiesta")
 else:
-    print("El carro puede salir sin problema.")
+  print("Debes esperar")
+        `,
+        options: ["Puedes entrar a la fiesta", "Debes esperar"],
+        answer: 1,
+        feedback: {
+            correct: "¡Exacto! Como 17 no es mayor o igual a 18, la condición del `if` es falsa y el programa ejecuta el código del `else`.",
+            incorrect: "No del todo. La condición a evaluar es `17 >= 18`. ¿Es eso verdadero o falso? Basado en esa respuesta, el programa elige qué imprimir."
+        },
+        help: "Este es el uso más clásico de un `if/else`: una decisión binaria. O cumples la condición, o no la cumples. No hay más opciones. Es perfecto para casos de 'aprobado/reprobado', 'dentro/fuera', 'sí/no'."
+    },
+    // Parte 2: Bucles
+    {
+        title: "PARTE 2: Repitiendo Tareas",
+        content: `
+            <div class="text-center">
+                <p class="text-6xl mb-4">🔄</p>
+                <h2 class="text-3xl font-bold text-sky-400 mb-2">Bucles <code class="font-fira">for</code></h2>
+                <p>¿Para qué escribir el mismo código mil veces? Mejor, ¡que el computador lo haga por ti! Es como una ruta de Transmilenio: en cada estación haces lo mismo (abrir y cerrar puertas).</p>
+            </div>
+        `,
+        help: "Los bucles son uno de los conceptos más importantes. Son la clave de la automatización. Cualquier tarea que sientas que es repetitiva (imprimir 100 tiquetes, revisar 50 correos, saludar a 20 usuarios) es un trabajo perfecto para un bucle `for`."
+    },
+     {
+        title: "La Sintaxis: 'Para cada... en...'",
+        content: `
+            <p class="mb-6">El bucle se lee casi como una frase normal.</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-xl mx-auto">
+                <pre><code class="language-python">
+<span class="text-pink-400">for</span> <span class="text-purple-400">localidad</span> <span class="text-pink-400">in</span> <span class="text-yellow-400">localidades</span>:
+  <span class="text-gray-500"># (1) Código que se repite (¡indentado!)</span>
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Visitando: "</span> + <span class="text-purple-400">localidad</span><span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+            <ul class="text-left max-w-xl mx-auto mt-6 space-y-2 text-gray-400">
+                <li><code class="font-fira text-purple-400">localidad</code>: Es una <strong>variable temporal</strong>. En cada "vuelta", guardará un elemento de la colección.</li>
+                <li><code class="font-fira text-yellow-400">localidades</code>: Es la <strong>colección</strong> o grupo de elementos que vamos a recorrer.</li>
+            </ul>
+        `,
+        help: "La mejor forma de leer esta línea es literalmente: 'Para cada `localidad` que se encuentre en la lista `localidades`, haz lo siguiente:'. La variable `localidad` es como una mano que, en la primera vuelta, agarra el primer elemento de la lista. En la segunda, suelta el primero y agarra el segundo, y así hasta que se acaban los elementos."
+    },
+    // Práctica guiada: Localidades
+    {
+        title: "Práctica: Recorriendo Localidades 🏙️",
+        content: `
+            <p class="font-bold text-lg mb-2">Paso 1: Crear una lista.</p>
+            <p class="mb-4">Una lista es una colección de elementos. La creamos con corchetes <code class="font-fira">[]</code> y comas.</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-lg mx-auto">
+                <pre><code class="language-python">
+<span class="text-gray-500"># Esto es una lista de textos (strings)</span>
+<span class="text-purple-400">localidades</span> = [<span class="text-yellow-400">"Usaquén"</span>, <span class="text-yellow-400">"Chapinero"</span>, <span class="text-yellow-400">"Suba"</span>]
+                </code></pre>
+            </div>
+        `,
+        help: "Las listas son como una bolsa de mercado. Puedes meter muchas cosas dentro (en este caso, los nombres de las localidades) y luego puedes ir sacando cada cosa de una en una para hacer algo con ella. Veremos las listas con mucho más detalle en el Módulo 3, ¡pero por ahora esta idea es suficiente!"
+    },
+    {
+        title: "Práctica: Recorriendo Localidades 🏙️",
+        content: `
+            <p class="font-bold text-lg mb-2">Paso 2: Crear el bucle <code class="font-fira">for</code>.</p>
+            <p class="mb-4">Ahora, le decimos a Python que recorra la lista e imprima cada elemento.</p>
+            <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-xl mx-auto">
+                <pre><code class="language-python">
+<span class="text-purple-400">localidades</span> = [<span class="text-yellow-400">"Usaquén"</span>, <span class="text-yellow-400">"Chapinero"</span>, <span class="text-yellow-400">"Suba"</span>]
+
+<span class="text-pink-400">for</span> <span class="text-purple-400">localidad</span> <span class="text-pink-400">in</span> <span class="text-yellow-400">localidades</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Visitando la localidad de: "</span> + <span class="text-purple-400">localidad</span><span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+            <p class="mt-4">¿Cuál será el resultado en la consola?</p>
+        `,
+        help: "Piensa en lo que hace el bucle. 1. Primera vuelta: `localidad` se convierte en 'Usaquén'. Imprime 'Visitando... Usaquén'. 2. Segunda vuelta: `localidad` se convierte en 'Chapinero'. Imprime 'Visitando... Chapinero'. 3. Y así... hasta llegar a 'Suba'. Después de eso, la lista se acaba y el bucle termina."
+    },
+    {
+        title: "Práctica: Recorriendo Localidades 🏙️",
+        content: `
+            <p class="font-bold text-lg mb-4">¡Resultado!</p>
+            <div class="font-fira text-left bg-black p-4 rounded-lg border border-gray-700 max-w-md mx-auto">
+                <p class="text-white">> Visitando la localidad de: Usaquén</p>
+                <p class="text-white">> Visitando la localidad de: Chapinero</p>
+                <p class="text-white">> Visitando la localidad de: Suba</p>
+            </div>
+            <p class="mt-6">¡Perfecto! Con solo 2 líneas de código, procesamos 3 elementos. Si la lista tuviera 1.000, ¡el código sería el mismo!</p>
+        `,
+        help: "¿Ves el poder de esto? Has automatizado una tarea. En lugar de escribir tres `print` diferentes, le diste una instrucción genérica al bucle y él se encargó del trabajo pesado. Esa es la magia de los bucles: la eficiencia."
+    },
+    {
+        title: "Repetir un Número Fijo de Veces con `range()` 🖐️",
+        content: `
+            <p class="mb-4">A veces no tienes una lista, solo quieres <strong>repetir algo X veces</strong>. Para eso usamos <code class="font-fira text-blue-400">range()</code>.</p>
+            <div class="bg-[#0D1117] p-4 rounded-lg border border-gray-700">
+                <p class="font-fira text-lg"><code class="text-blue-400">range(5)</code> genera una secuencia de números: <code class="text-orange-400">0, 1, 2, 3, 4</code></p>
+                <p class="text-red-400 mt-2"><strong>¡Atención!</strong> Siempre empieza en 0 y <strong>no incluye el número final</strong>.</p>
+            </div>
+            <div class="font-fira text-left bg-[#010409] p-4 mt-6 rounded-lg border border-gray-700 max-w-xl mx-auto">
+                <pre><code class="language-python">
+<span class="text-pink-400">for</span> <span class="text-purple-400">numero</span> <span class="text-pink-400">in</span> <span class="text-blue-400">range(3)</span>: <span class="text-gray-500"># Esto se repetirá 3 veces (0, 1, 2)</span>
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Vuelta N° "</span> + <span class="text-blue-400">str</span>(<span class="text-purple-400">numero</span> + <span class="text-orange-400">1</span>)<span class="text-green-400">)</span>
+                </code></pre>
+            </div>
+            <p class="mt-2 text-sm text-gray-400">*Sumamos 1 solo para que el mensaje se vea más natural (de 1 a 3 en vez de 0 a 2).</p>
+        `,
+        help: "`range()` es un generador de secuencias de números. Es como si le pidieras a alguien que contara en voz alta para ti. Si le dices `range(3)`, él contará '0, 1, 2' y se detendrá. Lo usamos con `for` para tener un bucle que sabemos exactamente cuántas veces se va a repetir."
+    },
+    // Checkpoint 2
+    {
+        title: "checkpoint ! Punto de Control 🤓",
+        type: 'quiz',
+        question: '¿Cuántas veces se imprimirá el mensaje "Hola" con el siguiente código?',
+        code: `
+for i in range(4):
+  print("Hola")
+        `,
+        options: ["3 veces", "4 veces", "5 veces", "Infinitas veces"],
+        answer: 1,
+        feedback: {
+            correct: "¡Correcto! `range(4)` genera la secuencia 0, 1, 2, 3. El bucle se ejecuta una vez por cada número en esa secuencia, es decir, 4 veces.",
+            incorrect: "Recuerda que `range(N)` genera N números, comenzando desde 0 hasta N-1. Así que `range(4)` es `0, 1, 2, 3`."
+        },
+        help: "Un error común es pensar que `range(4)` va hasta el 4. ¡Pero no! Siempre se detiene un número antes. Si quieres contar hasta 4 (1, 2, 3, 4), podrías usar `range(1, 5)`... ¡pero eso es un tema para más adelante!"
+    },
+    // Checkpoint 2.5 (Práctica Autónoma)
+    {
+        title: "checkpoint ! ¡Tu Turno! ✖️",
+        type: 'text_input',
+        question: 'El siguiente código debe imprimir la tabla del 3 (3, 6, 9). ¿Qué falta en el espacio en blanco?',
+        code: `
+for numero in range(1, 4):
+  resultado = 3 * _____
+  print(resultado)
+        `,
+        answer: "numero",
+        feedback: {
+            correct: "¡Perfecto! En cada vuelta, `numero` valdrá 1, luego 2, y luego 3. Al multiplicarlo por 3, obtienes la tabla de multiplicar.",
+            incorrect: "¡Casi! Piensa en qué variable está cambiando en cada vuelta del bucle y contiene los valores 1, 2 y 3 que necesitas para multiplicar."
+        },
+        help: "La variable que declaras en el `for` (en este caso, `numero`) es tu herramienta principal dentro del bucle. En cada iteración, contiene un valor diferente de la secuencia, listo para que lo uses en tus cálculos."
+    },
+    // Desafío Final
+    {
+        title: "Módulo 2: Desafío Final",
+        content: `
+            <div class="text-center">
+                 <p class="text-6xl mb-4">🏆</p>
+                <h2 class="text-3xl font-bold text-sky-400 mb-2">Simulador de Acceso a Evento</h2>
+                <p class="mb-6">¡Es hora de combinarlo todo! Vamos a crear un programa que decida si una persona puede entrar a un evento y a qué zona.</p>
+                <ul class="text-left max-w-lg mx-auto space-y-2 list-disc list-inside bg-[#0D1117] p-6 rounded-lg border border-gray-700">
+                    <li>La persona debe tener <strong>18 años o más</strong> para entrar.</li>
+                    <li>Si entra, revisaremos su tipo de boleto: <strong>"VIP"</strong> o <strong>"General"</strong>.</li>
+                    <li>Se debe imprimir un mensaje de bienvenida diferente para cada zona.</li>
+                    <li>Si es menor de edad, se le debe negar el acceso.</li>
+                </ul>
+                <p class="mt-6">¿Listo para construir la solución paso a paso?</p>
+            </div>
+        `,
+        help: "¡Este es el momento de la verdad! Aquí vamos a usar un `if` para la edad, y dentro de ese `if`, vamos a usar *otro* `if` para el tipo de boleto. A esto se le llama 'condicionales anidados'. Es como un puesto de control dentro de otro. Primero te revisan la edad y, si pasas, luego te revisan el boleto."
+    },
+    // Evaluación Final Interactiva
+    {
+        title: "Construyendo la Solución 📝",
+        type: 'final_evaluation',
+        steps: [
+            {
+                question: 'Primero, guardemos la información. ¿Cómo crearías una variable llamada `edad` para una persona de 25 años?',
+                answer: 'edad=25',
+                codeLine: '<span class="text-purple-400">edad</span> = <span class="text-orange-400">25</span>'
+            },
+            {
+                question: 'Ahora, crea una variable `tipo_boleto` que guarde el texto "VIP". ¡Ojo con las comillas!',
+                answer: 'tipo_boleto="VIP"',
+                codeLine: '<span class="text-purple-400">tipo_boleto</span> = <span class="text-yellow-400">"VIP"</span>'
+            },
+            {
+                question: 'Vamos con la regla principal: la edad. ¿Cómo escribes la condición `if` para verificar si la `edad` es mayor o igual a 18? (No olvides los dos puntos `:` al final)',
+                answer: 'ifedad>=18:',
+                codeLine: '<br><span class="text-pink-400">if</span> <span class="text-purple-400">edad</span> >= <span class="text-orange-400">18</span>:'
+            },
+            {
+                question: 'Si es mayor de edad, revisamos el boleto. Escribe un `if` para comprobar si `tipo_boleto` es **igual a** "VIP". (¡Con indentación y doble igual!)',
+                answer: 'iftipo_boleto=="VIP":',
+                codeLine: '  <span class="text-pink-400">if</span> <span class="text-purple-400">tipo_boleto</span> == <span class="text-yellow-400">"VIP"</span>:'
+            },
+            {
+                question: 'Perfecto. Ahora imprime el mensaje para los VIP: "Acceso a la zona VIP. ¡Disfruta!". (¡Doble indentación!)',
+                answer: 'print("AccesoalazonaVIP.¡Disfruta!")',
+                codeLine: '    <span class="text-green-400">print(</span><span class="text-yellow-400">"Acceso a la zona VIP. ¡Disfruta!"</span><span class="text-green-400">)</span>'
+            },
+            {
+                question: '¿Y si el boleto no es VIP? Escribe el `else` que corresponde al `if` del boleto. (Con una sola indentación)',
+                answer: 'else:',
+                codeLine: '  <span class="text-pink-400">else</span>:'
+            },
+            {
+                question: 'Ahora, el mensaje para el boleto General: "Acceso a zona General. ¡Que disfrutes!". (¡Doble indentación!)',
+                answer: 'print("AccesoazonaGeneral.¡Quedisfrutes!")',
+                codeLine: '    <span class="text-green-400">print(</span><span class="text-yellow-400">"Acceso a zona General. ¡Que disfrutes!"</span><span class="text-green-400">)</span>'
+            },
+            {
+                question: 'Ya cubrimos a los mayores de edad. ¿Qué pasa si la primera condición (`edad >= 18`) es falsa? Escribe el `else` principal. (¡Sin indentación!)',
+                answer: 'else:',
+                codeLine: '<span class="text-pink-400">else</span>:'
+            },
+            {
+                question: 'Y finalmente, el mensaje para los menores de edad: "Lo sentimos, no puedes ingresar.". (¡Con indentación!)',
+                answer: 'print("Losentimos,nopuedesingresar.")',
+                codeLine: '  <span class="text-green-400">print(</span><span class="text-yellow-400">"Lo sentimos, no puedes ingresar."</span><span class="text-green-400">)</span>'
+            }
+        ],
+        help: "Este desafío une todo. Observa cómo el `if/else` del boleto está *completamente dentro* del primer `if`. Eso se llama anidación. Solo si la primera condición es verdadera, el programa empieza a mirar la segunda. Si la primera es falsa, salta todo ese bloque y va directo al `else` principal."
+    },
+    // Conclusión
+    {
+        title: "¡Desafío Superado! 🎉",
+        content: `
+             <div class="text-center">
+                <p class="text-4xl md:text-5xl">¡Felicitaciones! Has completado el desafío y el Módulo 2.</p>
+                <p class="mt-4 mb-6">Construiste un programa con lógica compleja, ¡estás pensando como un programador!</p>
+                <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-xl mx-auto">
+                    <pre><code class="language-python">
+<span class="text-purple-400">edad</span> = <span class="text-orange-400">25</span>
+<span class="text-purple-400">tipo_boleto</span> = <span class="text-yellow-400">"VIP"</span>
+
+<span class="text-pink-400">if</span> <span class="text-purple-400">edad</span> >= <span class="text-orange-400">18</span>:
+  <span class="text-pink-400">if</span> <span class="text-purple-400">tipo_boleto</span> == <span class="text-yellow-400">"VIP"</span>:
+    <span class="text-green-400">print(</span><span class="text-yellow-400">"Acceso a la zona VIP. ¡Disfruta!"</span><span class="text-green-400">)</span>
+  <span class="text-pink-400">else</span>:
+    <span class="text-green-400">print(</span><span class="text-yellow-400">"Acceso a zona General. ¡Que disfrutes!"</span><span class="text-green-400">)</span>
+<span class="text-pink-400">else</span>:
+  <span class="text-green-400">print(</span><span class="text-yellow-400">"Lo sentimos, no puedes ingresar."</span><span class="text-green-400">)</span>
+                    </code></pre>
+                </div>
+            </div>
+        `,
+        help: "¡Lo lograste! Has completado uno de los módulos más importantes de la programación. Entender condicionales y bucles te abre la puerta a crear programas que pueden hacer cosas increíblemente útiles y complejas. ¡Sigue así!"
+    },
+    {
+        title: "Resumen y Próximos Pasos 🚀",
+        content: `
+            <h2 class="text-3xl font-bold text-sky-400 mb-6">Módulo 2 Completado</h2>
+            <p class="mb-6">Hoy aprendiste a:</p>
+            <ul class="space-y-3 text-left max-w-md mx-auto list-disc list-inside">
+                <li>Controlar el flujo de tu programa con <code class="font-fira">if</code>, <code class="font-fira">elif</code> y <code class="font-fira">else</code>.</li>
+                <li>Usar operadores de comparación (<code class="font-fira">==, >, <=,</code> etc.).</li>
+                <li>La importancia CRUCIAL de la indentación.</li>
+                <li>Automatizar tareas con bucles <code class="font-fira">for</code> y <code class="font-fira">range()</code>.</li>
+                <li>Combinar estas herramientas para resolver problemas.</li>
+            </ul>
+            <p class="mt-8"><strong>En el Módulo 3: "Colecciones: Guardando Cosas en Grupo"</strong>, profundizaremos en las listas y otras formas de organizar grandes cantidades de datos.</p>
+            <p class="mt-2 font-bold text-lg">¡Nos vemos allá!</p>
+        `,
+        help: "¡Ya casi eres un experto! El próximo módulo se trata de organización. Si las variables son cajas para guardar una cosa, las colecciones son estanterías para guardar muchas cajas de forma ordenada. ¡Es la base para manejar grandes volúmenes de información!"
+    }
+];
+
+// --- FUNCIONES DE LA APLICACIÓN ---
+
+function createSlideHTML(slideData, index) {
+    const slideDiv = document.createElement('div');
+    slideDiv.className = 'slide w-full h-full flex flex-col items-center justify-center text-center';
+    slideDiv.dataset.index = index;
+
+    let contentHTML = `
+        <div class="absolute top-4 right-4">
+            <button class="help-button bg-gray-700 text-sky-400 font-bold rounded-full w-10 h-10 flex items-center justify-center text-xl" data-help-text="${slideData.help.replace(/"/g, '&quot;')}">?</button>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold text-sky-400 mb-6">${slideData.title}</h2>
+    `;
     
-# EXPERIMENTA: Cambia el 7 por un 3 y mira qué pasa.`
-            },
-            {
-                type: 'quiz',
-                title: 'Punto de Control 🧠',
-                question: 'Si tienes el código: `edad = 20`. ¿Qué imprimirá la siguiente condición?',
-                code: `if edad < 18:
-    print("Menor de edad")
-elif edad == 20:
-    print("Tiene 20 años")
-else:
-    print("Mayor de edad")`,
-                options: ['Menor de edad', 'Tiene 20 años', 'Mayor de edad', 'Dará un error'],
-                correct: 1,
-                feedback: '¡Correcto! El programa primero revisa `edad < 18` (falso), luego `edad == 20` (verdadero), imprime "Tiene 20 años" y se detiene.',
-                help: `Recuerda el orden: Python va de arriba hacia abajo. La primera condición que encuentra que sea 'True' es la que ejecuta. Aunque `edad > 18` también es verdad, nunca llega a revisar el `else` porque el `elif` ya fue verdadero.`
-            },
-            // --- Part 2: Loops ---
-             {
-                type: 'concept',
-                title: 'Parte 2: Repitiendo Tareas',
-                content: `<p class="text-lg">Ahora, enseñaremos al computador a repetir una acción varias veces sin que tengamos que escribir el mismo código una y otra vez. A esto se le llama un <strong>bucle</strong>.</p><p>Es como recorrer las estaciones de una ruta de Transmilenio: en cada parada haces lo mismo (abrir y cerrar puertas) para cada estación de la lista.</p>`,
-                icon: 'repeat',
-                help: `Los bucles son uno de los conceptos más útiles. Imagina que tienes que saludar a 100 personas. ¿Escribirías `print("Hola")` 100 veces? ¡Claro que no! Con un bucle, le dices "haz `print("Hola")` 100 veces". Te ahorra tiempo y hace tu código mucho más corto y limpio.`
-            },
-            {
-                type: 'concept_code',
-                title: 'El Bucle `for`',
-                content: `La idea es simple: <strong>"Para cada elemento en este grupo, haz lo siguiente"</strong>.`,
-                code: `for variable_temporal in coleccion:
-    # Este código indentado se repetirá
-    # para cada elemento de la colección.`,
-                explanation: `<ul>
-                    <li><strong class="text-green-400">variable_temporal:</strong> Es una variable que creamos ahí mismo. En cada repetición, guardará un elemento del grupo.</li>
-                    <li><strong class="text-purple-400">coleccion:</strong> Es el grupo de elementos que vamos a recorrer (por ejemplo, una lista de nombres).</li>
-                </ul>`,
-                help: `La `variable_temporal` es como tu mano. Si la `coleccion` es una canasta de frutas, en la primera vuelta del bucle, tu mano (la variable) coge una manzana. En la segunda vuelta, coge una pera. Y así hasta que no queden frutas en la canasta. El nombre 'variable_temporal' lo pones tú, ¡puede ser `fruta`, `nombre`, `item`, lo que quieras que tenga sentido!`
-            },
-            {
-                type: 'practice',
-                title: 'Práctica: Recorriendo Localidades',
-                content: 'Vamos a crear un bucle que recorra una lista de localidades de Bogotá y las imprima una por una.',
-                code: `# 1. Creamos la colección (una lista)
-localidades = ["Usaquén", "Chapinero", "Teusaquillo", "Suba"]
+    // Contenido dinámico según el tipo de diapositiva
+    if (slideData.type === 'quiz') {
+        const optionsHTML = slideData.options.map((option, i) => `
+            <label class="block w-full text-left p-4 border border-gray-700 rounded-lg hover:bg-sky-900/50 hover:border-sky-500 cursor-pointer transition-colors">
+                <input type="radio" name="quiz${index}" value="${i}" class="mr-3">
+                ${option.includes('<') ? option : `<span class="font-fira">${option}</span>`}
+            </label>
+        `).join('');
 
-# 2. Creamos el bucle 'for'
-# "Para cada 'localidad' en la lista 'localidades'..."
-for localidad in localidades:
-    # 3. El código que se repite (¡con indentación!)
-    print("Visitando la localidad de: " + localidad)`,
-                help: `Fíjate cómo funciona: el bucle empieza. La primera vez, la variable `localidad` vale "Usaquén" y lo imprime. Termina el código indentado y vuelve a empezar. Ahora, `localidad` vale "Chapinero" y lo imprime. Así sigue hasta que se acaban los elementos de la lista.`
-            },
-            {
-                type: 'concept_code',
-                title: 'Repetir con `range()`',
-                content: 'A veces no tienes una lista, solo quieres repetir algo un número fijo de veces. Para eso, usamos `range()`.',
-                code: `# range(5) genera números del 0 al 4.
-# ¡Ojo! No incluye el 5.
+        contentHTML += `
+            <div class="w-full max-w-2xl text-lg">
+                <p class="mb-4">${slideData.question}</p>
+                ${slideData.code ? `<div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-lg mx-auto mb-6"><pre><code>${slideData.code.trim()}</code></pre></div>` : ''}
+                <div class="space-y-3 mb-4">${optionsHTML}</div>
+                <button class="check-answer-btn bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Comprobar</button>
+                <p class="feedback-msg mt-4 h-12"></p>
+            </div>
+        `;
+    } else if (slideData.type === 'text_input') {
+         contentHTML += `
+            <div class="w-full max-w-2xl text-lg">
+                <p class="mb-4">${slideData.question}</p>
+                <div class="font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700 max-w-lg mx-auto mb-6"><pre><code>${slideData.code.trim()}</code></pre></div>
+                <input type="text" class="text-input font-fira bg-gray-900 border-2 border-gray-600 rounded-lg p-2 w-full max-w-sm mx-auto block focus:border-sky-500 focus:outline-none" placeholder="Escribe tu respuesta aquí...">
+                <button class="check-answer-btn mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Comprobar</button>
+                <p class="feedback-msg mt-4 h-12"></p>
+            </div>
+        `;
+    } else if (slideData.type === 'final_evaluation') {
+         contentHTML += `
+            <div class="w-full max-w-3xl flex flex-col md:flex-row gap-6">
+                <div class="flex-1 md:w-1/2">
+                    <p id="eval-question" class="text-lg mb-4 text-left"></p>
+                    <input type="text" id="eval-input" class="text-input font-fira bg-gray-900 border-2 border-gray-600 rounded-lg p-2 w-full focus:border-sky-500 focus:outline-none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <button id="eval-check-btn" class="mt-4 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg w-full">Comprobar</button>
+                    <p id="eval-feedback" class="mt-4 h-8 text-left"></p>
+                </div>
+                <div class="flex-1 md:w-1/2 font-fira text-left bg-[#010409] p-4 rounded-lg border border-gray-700">
+                    <pre><code id="eval-code-display"></code></pre>
+                </div>
+            </div>
+        `;
+    } else {
+        contentHTML += `<div class="w-full max-w-3xl text-lg">${slideData.content}</div>`;
+    }
+    
+    slideDiv.innerHTML = contentHTML;
+    return slideDiv;
+}
 
-for numero in range(5):
-    # Sumamos 1 para que se vea del 1 al 5
-    print("Vuelta N°" + str(numero + 1))`,
-                explanation: '`range(X)` crea una secuencia de números que empieza en 0 y termina en X-1.',
-                help: `Esta es una herramienta súper común. `range()` es perfecta cuando sabes exactamente cuántas veces quieres repetir algo. `range(3)` te da 0, 1, 2. `range(10)` te da 0, 1, 2, 3, 4, 5, 6, 7, 8, 9. Siempre empieza en cero. Es como contar, pero los programadores aman empezar desde el 0.`
-            },
-            {
-                type: 'quiz',
-                title: 'Punto de Control 🧠',
-                question: '¿Cuántas veces se imprimirá la palabra "Hola" en la pantalla?',
-                code: `for i in range(3):
-    print("Hola")`,
-                options: ['2 veces', '3 veces', '4 veces', 'Dará un error'],
-                correct: 1,
-                feedback: '¡Exacto! `range(3)` genera la secuencia de números 0, 1, 2. El bucle se ejecuta una vez para cada número, es decir, 3 veces.',
-                help: `Aunque la variable `i` (que toma los valores 0, 1 y 2) no se usa dentro del bucle, sí que controla cuántas veces se ejecuta el código indentado. El bucle corre una vez por cada elemento en la secuencia que le das.`
-            },
-            // --- Final Challenge ---
-            {
-                type: 'final_challenge_intro',
-                title: '🚀 Desafío Final: El Validador de Transmilenio',
-                content: `<p class="text-lg">¡Es hora de combinarlo todo! Vamos a construir, paso a paso, un programa que simula la entrada a una estación de Transmilenio.</p>
-                <p>El programa tendrá un saldo inicial en una tarjeta y revisará si es suficiente para pagar el pasaje. Lo descubriremos juntos, línea por línea.</p>`,
-                icon: 'shield-check',
-                help: `Este es el gran final del módulo. Aquí no solo usarás `if` o `for` por separado, sino que los combinarás para resolver un problema más real. No te preocupes, te guiaré en cada paso. El objetivo es que veas cómo estas piezas se unen para crear algo útil.`
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 1',
-                question: 'Necesitamos dos variables para empezar: una para el saldo de la tarjeta y otra para el costo del pasaje. ¿Cómo declararías una variable `saldo_tarjeta` con un valor de 5000?',
-                placeholder: 'Escribe aquí la línea de código...',
-                correctAnswer: 'saldo_tarjeta = 5000',
-                codeLine: 1
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 2',
-                question: '¡Genial! Ahora, declara una variable `costo_pasaje` con un valor de 2950.',
-                placeholder: 'Escribe aquí la línea de código...',
-                correctAnswer: 'costo_pasaje = 2950',
-                codeLine: 2
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 3',
-                question: 'Perfecto. Ahora necesitamos la condición principal. ¿Cómo escribirías un `if` que revise si el saldo de la tarjeta es mayor o igual que el costo del pasaje?',
-                placeholder: 'if ... :',
-                correctAnswer: 'if saldo_tarjeta >= costo_pasaje:',
-                codeLine: 3
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 4',
-                question: '¡Correcto! Si el saldo es suficiente, debemos imprimir que el usuario puede pasar y luego actualizar el saldo. ¿Cómo imprimirías "Puede pasar. ¡Bienvenido!"?',
-                placeholder: 'Recuerda la indentación...',
-                correctAnswer: '    print("Puede pasar. ¡Bienvenido!")',
-                codeLine: 4
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 5',
-                question: 'Muy bien. Ahora, ¿cómo actualizarías la variable `saldo_tarjeta` para restarle el `costo_pasaje`?',
-                placeholder: 'saldo_tarjeta = ...',
-                correctAnswer: '    saldo_tarjeta = saldo_tarjeta - costo_pasaje',
-                codeLine: 5
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 6',
-                question: 'Excelente. Después de la transacción, vamos a mostrarle al usuario su nuevo saldo. ¿Cómo imprimirías el nuevo saldo?',
-                placeholder: 'print("Tu nuevo saldo es: " + ...)',
-                correctAnswer: '    print("Tu nuevo saldo es: " + str(saldo_tarjeta))',
-                codeLine: 6
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 7',
-                question: 'Casi terminamos. ¿Qué pasa si el saldo no es suficiente? Necesitamos un `else`. ¿Cómo escribirías el `else` para manejar esa situación?',
-                placeholder: 'Debe estar al mismo nivel que el if...',
-                correctAnswer: 'else:',
-                codeLine: 7
-            },
-            {
-                type: 'final_challenge_step',
-                title: 'Desafío: Paso 8',
-                question: '¡Último paso! Dentro del `else`, ¿cómo le dirías al usuario "Saldo insuficiente. Por favor recarga tu tarjeta."?',
-                placeholder: 'Recuerda la indentación...',
-                correctAnswer: '    print("Saldo insuficiente. Por favor recarga tu tarjeta.")',
-                codeLine: 8
-            },
-            {
-                type: 'outro',
-                title: '¡Módulo 2 Completado!',
-                content: `<p class="text-xl mb-4">¡LO LOGRASTE! Has dominado dos de las herramientas más poderosas de la programación: los condicionales y los bucles.</p>
-                <p>Ahora puedes crear programas que toman decisiones, se adaptan a diferentes situaciones y realizan tareas repetitivas de forma eficiente. Estás un paso más cerca de convertirte en un gran programador.</p>`,
-                icon: 'award'
-            }
-        ];
+function renderSlides() {
+    slidesContainer.innerHTML = '';
+    slidesData.forEach((slide, index) => {
+        slidesContainer.appendChild(createSlideHTML(slide, index));
+    });
+}
+
+
+function showSlide(index) {
+    const slides = document.querySelectorAll('.slide');
+    slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+    });
+
+    currentSlide = index;
+    localStorage.setItem('codeBogotaModule2Progress', currentSlide);
+    updateUI();
+    
+    // Si es una diapositiva de checkpoint, deshabilitar "Siguiente"
+    const currentSlideData = slidesData[index];
+    if (currentSlideData.type === 'quiz' || currentSlideData.type === 'text_input' || currentSlideData.type === 'final_evaluation') {
+        nextBtn.disabled = true;
+    }
+
+    if(currentSlideData.type === 'final_evaluation') {
+        startFinalEvaluation();
+    }
+}
+
+function updateUI() {
+    // Barra de progreso
+    const progress = ((currentSlide + 1) / slidesData.length) * 100;
+    progressBar.style.width = `${progress}%`;
+
+    // Contador de diapositivas
+    slideCounter.textContent = `Diapositiva ${currentSlide + 1} de ${slidesData.length}`;
+
+    // Botones de navegación
+    prevBtn.disabled = currentSlide === 0;
+    nextBtn.disabled = (slidesData[currentSlide].type === 'quiz' || slidesData[currentSlide].type === 'text_input' || slidesData[currentSlide].type === 'final_evaluation') || (currentSlide === slidesData.length - 1);
+}
+
+// --- LÓGICA DE QUIZ Y CHECKPOINTS ---
+
+function handleQuizCheck(slideElement) {
+    const selected = slideElement.querySelector('input[type="radio"]:checked');
+    const feedbackMsg = slideElement.querySelector('.feedback-msg');
+    const slideIndex = parseInt(slideElement.dataset.index);
+    const slideData = slidesData[slideIndex];
+
+    if (!selected) {
+        feedbackMsg.textContent = "Por favor, selecciona una opción.";
+        feedbackMsg.className = 'feedback-msg mt-4 h-12 text-yellow-400';
+        return;
+    }
+
+    if (parseInt(selected.value) === slideData.answer) {
+        feedbackMsg.textContent = slideData.feedback.correct;
+        feedbackMsg.className = 'feedback-msg mt-4 h-12 text-green-400';
+        nextBtn.disabled = false;
+        slideElement.querySelector('.check-answer-btn').disabled = true;
+    } else {
+        feedbackMsg.textContent = slideData.feedback.incorrect;
+        feedbackMsg.className = 'feedback-msg mt-4 h-12 text-red-400';
+        nextBtn.disabled = false; // Permitir avanzar aunque se equivoque
+    }
+}
+
+function handleTextInputCheck(slideElement) {
+    const input = slideElement.querySelector('.text-input');
+    const feedbackMsg = slideElement.querySelector('.feedback-msg');
+    const slideIndex = parseInt(slideElement.dataset.index);
+    const slideData = slidesData[slideIndex];
+
+    const userAnswer = input.value.trim().toLowerCase();
+    const correctAnswer = slideData.answer.trim().toLowerCase();
+
+    if (userAnswer === correctAnswer) {
+        feedbackMsg.textContent = slideData.feedback.correct;
+        feedbackMsg.className = 'feedback-msg mt-4 h-12 text-green-400';
+        nextBtn.disabled = false;
+        slideElement.querySelector('.check-answer-btn').disabled = true;
+        input.disabled = true;
+    } else {
+        feedbackMsg.textContent = slideData.feedback.incorrect;
+        feedbackMsg.className = 'feedback-msg mt-4 h-12 text-red-400';
+        nextBtn.disabled = false;
+    }
+}
+
+
+// --- LÓGICA DE EVALUACIÓN FINAL ---
+
+let evalStep = 0;
+function startFinalEvaluation() {
+    evalStep = 0;
+    document.getElementById('eval-code-display').innerHTML = '';
+    askEvalQuestion();
+}
+
+function askEvalQuestion() {
+    const slideData = slidesData[currentSlide];
+    if (evalStep < slideData.steps.length) {
+        document.getElementById('eval-question').textContent = slideData.steps[evalStep].question;
+        document.getElementById('eval-input').value = '';
+        document.getElementById('eval-input').focus();
+        document.getElementById('eval-feedback').textContent = '';
+    } else {
+        document.getElementById('eval-question').textContent = "¡Lo has conseguido! Código completo.";
+        document.getElementById('eval-input').style.display = 'none';
+        document.getElementById('eval-check-btn').style.display = 'none';
+        nextBtn.disabled = false;
+    }
+}
+
+function checkEvalAnswer() {
+    const slideData = slidesData[currentSlide];
+    const input = document.getElementById('eval-input');
+    const feedback = document.getElementById('eval-feedback');
+    const codeDisplay = document.getElementById('eval-code-display');
+
+    // Normalizar respuestas: quitar espacios, convertir a minúsculas, quitar comillas y paréntesis para simplificar
+    const userAnswer = input.value.trim().toLowerCase().replace(/["'()\s]/g, '');
+    const correctAnswer = slideData.steps[evalStep].answer.trim().toLowerCase().replace(/["'()\s]/g, '');
+
+    if (userAnswer === correctAnswer) {
+        feedback.textContent = '¡Correcto!';
+        feedback.className = 'mt-4 h-8 text-left text-green-400';
         
-        // ===================================
-        // RENDERING LOGIC
-        // ===================================
-        function renderSlide() {
-            slidesContainer.innerHTML = '';
-            const slideData = slidesData[currentSlide];
-            let slideHTML = `<div class="slide active w-full h-full flex flex-col justify-center items-center text-center p-4">`;
-
-            if (slideData.type === 'intro') {
-                slideHTML += `
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">${slideData.title}</h2>
-                    <div class="text-gray-300 md:text-lg max-w-2xl">${slideData.content}</div>
-                     ${slideData.image ? `<img src="${slideData.image}" class="mt-6 rounded-lg max-h-48 shadow-lg object-cover">` : ''}
-                `;
-            } else if (slideData.type === 'objectives') {
-                slideHTML += `
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">${slideData.title}</h2>
-                    <ul class="space-y-3 text-left max-w-lg mx-auto">
-                        ${slideData.items.map(item => `
-                            <li class="flex items-start gap-3">
-                                <i data-lucide="check-circle" class="text-green-400 mt-1 w-6 h-6 flex-shrink-0"></i>
-                                <span class="md:text-lg">${item}</span>
-                            </li>
-                        `).join('')}
-                    </ul>
-                `;
-            } else if (slideData.type === 'concept') {
-                slideHTML += `
-                    ${slideData.icon ? `<div class="bg-blue-500/20 p-3 rounded-full mb-4"><i data-lucide="${slideData.icon}" class="w-10 h-10 text-blue-400"></i></div>` : ''}
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">${slideData.title}</h2>
-                    <div class="text-gray-300 md:text-lg max-w-2xl">${slideData.content}</div>
-                `;
-            } else if (slideData.type === 'concept_code' || slideData.type === 'concept_critical') {
-                 slideHTML += `<div class="w-full text-left flex flex-col md:flex-row gap-6 items-center">
-                    <div class="flex-1">
-                        <h2 class="text-3xl font-bold mb-4">${slideData.title}</h2>
-                        <div class="text-gray-300 md:text-lg">${slideData.content}</div>
-                        ${slideData.explanation ? `<div class="mt-4 text-gray-400">${slideData.explanation}</div>` : ''}
-                    </div>
-                    <div class="flex-1 w-full">
-                        <pre class="fira-code code-block p-4 rounded-lg text-sm md:text-base whitespace-pre-wrap">${slideData.code}</pre>
-                    </div>
-                </div>`;
-            } else if (slideData.type === 'practice') {
-                 slideHTML += `<div class="w-full text-left">
-                    <h2 class="text-3xl font-bold mb-4">${slideData.title}</h2>
-                    <p class="text-gray-300 md:text-lg mb-6">${slideData.content}</p>
-                    <div class="flex flex-col md:flex-row gap-6">
-                        ${slideData.steps ? `<ul class="space-y-2 flex-1">${slideData.steps.map((step, i) => `<li class="flex gap-2"><span class="text-blue-400 font-bold">${i+1}.</span><span>${step}</span></li>`).join('')}</ul>` : ''}
-                        <div class="flex-1">
-                             <pre class="fira-code code-block p-4 rounded-lg text-sm md:text-base">${slideData.code}</pre>
-                        </div>
-                    </div>
-                </div>`;
-            } else if (slideData.type === 'quiz') {
-                slideHTML += `
-                    <h2 class="text-3xl md:text-4xl font-bold mb-2">${slideData.title}</h2>
-                    <p class="text-lg text-gray-300 mb-4 max-w-2xl">${slideData.question}</p>
-                    ${slideData.code ? `<pre class="fira-code code-block p-4 rounded-lg text-left text-sm md:text-base my-4 max-w-md mx-auto">${slideData.code}</pre>` : ''}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 w-full max-w-lg">
-                        ${slideData.options.map((opt, i) => `<button onclick="handleQuizAnswer(${i})" class="btn-secondary p-4 rounded-lg text-lg text-left hover:bg-gray-600 w-full">${opt}</button>`).join('')}
-                    </div>
-                `;
-            } else if (slideData.type.startsWith('final_challenge')) {
-                const finalCodeContainerId = 'final-code-container';
-                const currentStep = parseInt(slideData.type.split('_').pop(), 10) || 0;
-                 slideHTML += `<div class="w-full text-left flex flex-col lg:flex-row gap-8">
-                    <div class="flex-1">
-                        <h2 class="text-3xl font-bold mb-4">${slideData.title}</h2>
-                        ${slideData.content ? `<div class="text-gray-300 md:text-lg">${slideData.content}</div>` : ''}
-                        ${slideData.question ? `<p class="text-lg text-gray-300 my-4">${slideData.question}</p>` : ''}
-                        ${slideData.placeholder ? `
-                            <div class="mt-4">
-                                <input id="challenge-input" type="text" class="fira-code bg-gray-900 border border-gray-600 rounded-lg p-3 w-full text-white" placeholder="${slideData.placeholder}">
-                                <button onclick="handleChallengeAnswer()" class="btn-primary mt-3 py-2 px-5 rounded-lg">Enviar</button>
-                            </div>
-                        ` : ''}
-                         ${slideData.icon ? `<div class="mx-auto bg-blue-500/20 p-4 rounded-full mt-6 w-20 h-20 flex items-center justify-center"><i data-lucide="${slideData.icon}" class="w-12 h-12 text-blue-400"></i></div>` : ''}
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-gray-400 mb-2">Código en construcción:</p>
-                        <div id="${finalCodeContainerId}" class="fira-code code-block p-4 rounded-lg text-base h-72">
-                        </div>
-                    </div>
-                 </div>`;
-            } else if (slideData.type === 'outro') {
-                slideHTML += `
-                    <div class="bg-green-500/20 p-4 rounded-full mb-6"><i data-lucide="${slideData.icon}" class="w-12 h-12 text-green-400"></i></div>
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">${slideData.title}</h2>
-                    <div class="text-gray-300 md:text-lg max-w-2xl">${slideData.content}</div>
-                `;
-            }
-
-            slideHTML += `</div>`;
-            slidesContainer.innerHTML = slideHTML;
-            lucide.createIcons();
-            updateNavigation();
-
-            // After rendering, if it's a challenge step, populate the code
-            if (slideData.type.startsWith('final_challenge')) {
-                updateChallengeCode();
-            }
-        }
-
-        function updateNavigation() {
-            const progress = ((currentSlide + 1) / slidesData.length) * 100;
-            progressBar.style.width = `${progress}%`;
-            slideCounter.textContent = `${currentSlide + 1} / ${slidesData.length}`;
-            prevBtn.disabled = currentSlide === 0;
-            prevBtn.classList.toggle('opacity-50', currentSlide === 0);
-            
-            const isLastSlide = currentSlide === slidesData.length - 1;
-            const isChallenge = slidesData[currentSlide].type.startsWith('final_challenge_step');
-
-            nextBtn.textContent = isLastSlide ? 'Finalizar' : 'Siguiente';
-            nextBtn.innerHTML = isLastSlide ? 'Finalizar <i data-lucide="party-popper"></i>' : 'Siguiente <i data-lucide="arrow-right"></i>';
-            nextBtn.onclick = isLastSlide ? () => alert("¡Curso finalizado!") : nextSlide;
-            
-            // Disable next button on quiz and challenge slides until completed
-            const currentProgress = studentProgress[currentSlide];
-            if ((slidesData[currentSlide].type === 'quiz' && currentProgress !== 'correct') || (isChallenge && currentProgress !== 'correct')) {
-                 nextBtn.disabled = true;
-                 nextBtn.classList.add('opacity-50');
-            } else {
-                 nextBtn.disabled = false;
-                 nextBtn.classList.remove('opacity-50');
-            }
-            lucide.createIcons();
-        }
+        const newLine = document.createElement('div');
+        newLine.className = 'code-line';
+        newLine.innerHTML = slideData.steps[evalStep].codeLine;
+        codeDisplay.appendChild(newLine);
         
-        function nextSlide() {
-            if (currentSlide < slidesData.length - 1) {
-                currentSlide++;
-                renderSlide();
-            }
-        }
+        // Forzar reflow para que la animación se ejecute
+        void newLine.offsetWidth;
+        newLine.classList.add('visible');
 
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                renderSlide();
-            }
-        }
+        evalStep++;
+        setTimeout(askEvalQuestion, 600);
+    } else {
+        feedback.textContent = '¡Casi! Inténtalo de nuevo.';
+        feedback.className = 'mt-4 h-8 text-left text-red-400';
+    }
+}
 
-        function showHelp() {
-            helpContent.innerHTML = `<p>${slidesData[currentSlide].help || 'No hay ayuda disponible para esta diapositiva.'}</p>`;
+
+// --- INICIALIZACIÓN Y EVENT LISTENERS ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderSlides();
+
+    // Event Delegation para los botones dentro de las diapositivas
+    slidesContainer.addEventListener('click', e => {
+        if (e.target.classList.contains('check-answer-btn')) {
+            const slideElement = e.target.closest('.slide');
+            const slideData = slidesData[parseInt(slideElement.dataset.index)];
+            if(slideData.type === 'quiz') handleQuizCheck(slideElement);
+            if(slideData.type === 'text_input') handleTextInputCheck(slideElement);
+        }
+        if (e.target.classList.contains('help-button')) {
+            helpModalContent.textContent = e.target.dataset.helpText;
             helpModal.classList.remove('hidden');
         }
+    });
 
-        function closeHelp() {
-            helpModal.classList.add('hidden');
-        }
+    document.getElementById('eval-check-btn')?.addEventListener('click', checkEvalAnswer);
+    document.getElementById('eval-input')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkEvalAnswer();
+    });
 
-        function handleQuizAnswer(selectedIndex) {
-            const slideData = slidesData[currentSlide];
-            const isCorrect = selectedIndex === slideData.correct;
-            
-            if (isCorrect) {
-                studentProgress[currentSlide] = 'correct';
-                feedbackContent.innerHTML = `
-                    <div class="bg-green-800/80 p-8 rounded-2xl">
-                        <i data-lucide="check-circle" class="w-16 h-16 text-green-300 mx-auto mb-4"></i>
-                        <h3 class="text-2xl font-bold text-white">¡Correcto!</h3>
-                        <p class="text-green-200 mt-2">${slideData.feedback}</p>
-                        <button onclick="closeFeedback()" class="btn-primary mt-6 py-2 px-6 rounded-lg">Continuar</button>
-                    </div>`;
-            } else {
-                studentProgress[currentSlide] = 'incorrect';
-                feedbackContent.innerHTML = `
-                    <div class="bg-red-800/80 p-8 rounded-2xl">
-                        <i data-lucide="x-circle" class="w-16 h-16 text-red-300 mx-auto mb-4"></i>
-                        <h3 class="text-2xl font-bold text-white">¡Ups! Inténtalo de nuevo.</h3>
-                        <p class="text-red-200 mt-2">Esa no es la respuesta. Revisa el material e inténtalo otra vez.</p>
-                        <div class="flex gap-4 mt-6 justify-center">
-                            <button onclick="goToReview()" class="btn-secondary py-2 px-6 rounded-lg">Repasar</button>
-                            <button onclick="closeFeedback(false)" class="btn-primary py-2 px-6 rounded-lg">Volver a intentar</button>
-                        </div>
-                    </div>`;
-            }
-            feedbackModal.classList.remove('hidden');
-            lucide.createIcons();
-        }
-        
-        function closeFeedback(updateNav = true) {
-            feedbackModal.classList.add('hidden');
-            if (updateNav) updateNavigation();
-        }
 
-        function goToReview() {
-            closeFeedback();
-            // Go back 2 slides for context
-            currentSlide = Math.max(0, currentSlide - 2);
-            renderSlide();
+    nextBtn.addEventListener('click', () => {
+        if (currentSlide < slidesData.length - 1) {
+            showSlide(currentSlide + 1);
         }
-        
-        // --- Final Challenge Logic ---
-        const challengeSolution = [
-            "saldo_tarjeta = 5000",
-            "costo_pasaje = 2950",
-            "if saldo_tarjeta >= costo_pasaje:",
-            "    print(\"Puede pasar. ¡Bienvenido!\")",
-            "    saldo_tarjeta = saldo_tarjeta - costo_pasaje",
-            "    print(\"Tu nuevo saldo es: \" + str(saldo_tarjeta))",
-            "else:",
-            "    print(\"Saldo insuficiente. Por favor recarga tu tarjeta.\")"
-        ];
-        let challengeLinesCorrect = 0;
+    });
 
-        function updateChallengeCode() {
-            const codeContainer = document.getElementById('final-code-container');
-            if (!codeContainer) return;
-
-            let codeHTML = '';
-            for (let i = 0; i < challengeLinesCorrect; i++) {
-                // Simple syntax highlighting
-                let line = challengeSolution[i];
-                line = line.replace(/(\bif\b|\belse\b)/g, '<span class="text-red-400">$1</span>');
-                line = line.replace(/(\bprint\b|\bstr\b)/g, '<span class="text-purple-400">$1</span>');
-                line = line.replace(/(".*?")/g, '<span class="text-green-400">$1</span>');
-                line = line.replace(/(\d+)/g, '<span class="text-yellow-400">$1</span>');
-                codeHTML += `<div class="whitespace-pre">${line}</div>`;
-            }
-            codeContainer.innerHTML = codeHTML;
+    prevBtn.addEventListener('click', () => {
+        if (currentSlide > 0) {
+            showSlide(currentSlide - 1);
         }
-        
-        function handleChallengeAnswer() {
-            const input = document.getElementById('challenge-input');
-            const userAnswer = input.value.trim();
-            const slideData = slidesData[currentSlide];
-            
-            // Normalize answer: remove multiple spaces and check
-            const normalizedCorrect = slideData.correctAnswer.replace(/\s+/g, ' ');
-            const normalizedUser = userAnswer.replace(/\s+/g, ' ');
+    });
 
-            if (normalizedUser === normalizedCorrect) {
-                studentProgress[currentSlide] = 'correct';
-                challengeLinesCorrect++;
-                showFeedback(true, "¡Línea correcta! Vamos con la siguiente.");
-                updateNavigation(); // This will enable the next button
-            } else {
-                 showFeedback(false, "Esa línea no es correcta. Fíjate bien en la sintaxis y los nombres de las variables.");
-            }
-        }
-        
-        function showFeedback(isCorrect, message) {
-            if (isCorrect) {
-                 feedbackContent.innerHTML = `
-                    <div class="bg-green-800/80 p-8 rounded-2xl">
-                        <i data-lucide="check-circle" class="w-16 h-16 text-green-300 mx-auto mb-4"></i>
-                        <h3 class="text-2xl font-bold text-white">¡Correcto!</h3>
-                        <p class="text-green-200 mt-2">${message}</p>
-                        <button onclick="closeFeedbackAndContinue()" class="btn-primary mt-6 py-2 px-6 rounded-lg">Continuar</button>
-                    </div>`;
-            } else {
-                 feedbackContent.innerHTML = `
-                    <div class="bg-red-800/80 p-8 rounded-2xl">
-                        <i data-lucide="x-circle" class="w-16 h-16 text-red-300 mx-auto mb-4"></i>
-                        <h3 class="text-2xl font-bold text-white">Inténtalo de nuevo</h3>
-                        <p class="text-red-200 mt-2">${message}</p>
-                        <button onclick="closeFeedback(false)" class="btn-primary mt-6 py-2 px-6 rounded-lg">Volver</button>
-                    </div>`;
-            }
-            feedbackModal.classList.remove('hidden');
-            lucide.createIcons();
-        }
-
-        function closeFeedbackAndContinue() {
-            closeFeedback(false);
-            if (slidesData[currentSlide].type.startsWith('final_challenge_step') && studentProgress[currentSlide] === 'correct') {
-                nextSlide();
-            }
-        }
-
-        // ===================================
-        // INITIALIZATION
-        // ===================================
-        prevBtn.addEventListener('click', prevSlide);
-        nextBtn.addEventListener('click', nextSlide);
-        helpBtn.addEventListener('click', showHelp);
-        closeHelpBtn.addEventListener('click', closeHelp);
-        // Close modal on outside click
-        helpModal.addEventListener('click', (e) => {
-            if (e.target === helpModal) closeHelp();
+    closeHelpModal.addEventListener('click', () => {
+        helpModal.classList.add('hidden');
+    });
+    
+    // Inicialización del modal de bienvenida y progreso
+    const savedProgress = localStorage.getItem('codeBogotaModule2Progress');
+    if (savedProgress) {
+        const slideNum = parseInt(savedProgress);
+        document.getElementById('welcomeMessage').textContent = `Hemos detectado que ya habías avanzado. ¿Quieres continuar desde la diapositiva ${slideNum + 1}?`;
+        const welcomeButtons = document.getElementById('welcomeButtons');
+        welcomeButtons.innerHTML = `
+            <button id="resumeBtn" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-6 rounded-lg transition-colors w-full mb-3">Sí, continuar</button>
+            <button id="startFreshBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors w-full">No, empezar de nuevo</button>
+        `;
+        document.getElementById('resumeBtn').addEventListener('click', () => {
+            welcomeModal.classList.add('hidden');
+            showSlide(slideNum);
         });
-         feedbackModal.addEventListener('click', (e) => {
-            if (e.target === feedbackModal) closeFeedback(true);
-        });
-        
-        // Find the correct starting point for challenge lines correct
-        let lastCorrectChallenge = -1;
-        for (let i = 0; i < slidesData.length; i++) {
-            if (slidesData[i].type.startsWith('final_challenge_step') && studentProgress[i] === 'correct') {
-                lastCorrectChallenge = i;
-            }
-        }
-        if(lastCorrectChallenge !== -1) {
-           const slideData = slidesData[lastCorrectChallenge];
-           challengeLinesCorrect = slideData.codeLine;
-        }
+    }
 
+    document.getElementById('startFreshBtn').addEventListener('click', () => {
+        welcomeModal.classList.add('hidden');
+        showSlide(0);
+    });
+});
+</script>
 
-        renderSlide();
-    </script>
 </body>
 </html>
